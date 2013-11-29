@@ -4,10 +4,16 @@ import java.util.ArrayList;
 
 import org.appcelerator.kroll.KrollDict;
 import org.appcelerator.kroll.annotations.Kroll;
+import org.appcelerator.kroll.common.Log;
 import org.appcelerator.titanium.proxy.TiViewProxy;
+import org.appcelerator.titanium.util.TiConvert;
 import org.appcelerator.titanium.util.TiUIHelper;
 import org.appcelerator.titanium.view.TiUIView;
 
+
+
+
+import android.R;
 //import android.R;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -39,9 +45,11 @@ public class MultiPickerProxy extends TiViewProxy {
 			super.processProperties(d);
 			if (d.containsKey("title")) {
 				getBuilder().setTitle(d.getString("title"));
-			} else if (d.containsKey("options")) {
-				String[] options = d.getStringArray("options"); 
+			}
+			if (d.containsKey("options")) {
+				String[] options = d.getStringArray("options");
 				final ArrayList<Integer> mSelectedItems = new ArrayList<Integer>();
+				
 				getBuilder().setMultiChoiceItems(options, null, new DialogInterface.OnMultiChoiceClickListener() {
 		               @Override
 		               public void onClick(DialogInterface dialog, int which,
@@ -53,15 +61,18 @@ public class MultiPickerProxy extends TiViewProxy {
 		                   }
 		               }
 		           })
-		           .setPositiveButton(/*R.string.ok*/"OK", new DialogInterface.OnClickListener() {
+		           .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
 		               @Override
 		               public void onClick(DialogInterface dialog, int id) {
+		            	   //convert to int array
+		            	   Integer[] selections = new Integer[mSelectedItems.size()];
+		            	   
 		            	   KrollDict data = new KrollDict();
-							data.put("seleted", mSelectedItems);
+							data.put("indexes", mSelectedItems.toArray(selections));
 							fireEvent("click", data);
 		               }
 		           })
-		           .setNegativeButton(/*R.string.cancel*/"Cancel", new DialogInterface.OnClickListener() {
+		           .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
 		               @Override
 		               public void onClick(DialogInterface dialog, int id) {
 		                   
@@ -72,7 +83,7 @@ public class MultiPickerProxy extends TiViewProxy {
 		}
 
 		public void show() {
-			getBuilder().show();
+			getBuilder().create().show();
 		}
 
 	}
