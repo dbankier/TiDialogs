@@ -8,17 +8,28 @@
 var win = Ti.UI.createWindow({
 	backgroundColor:'white'
 });
-var label = Ti.UI.createLabel();
-win.add(label);
 win.open();
 
 // TODO: write your module tests here
 var tidialogs = require('yy.tidialogs');
 
-var datePicker = tidialogs.createDatePicker();
-datePicker.addEventListener('click',function(e){
-	alert(e)
+win.addEventListener('doubletap', function() {
+  var picker = tidialogs.createDatePicker({day:28, month:7, year: 1980});
+  picker.addEventListener('click',function(e){
+    alert(JSON.stringify(e))
+  });
+  picker.show();
 });
-
-setTimeout(datePicker.show, 1000);
+win.addEventListener('swipe', function(e) {
+  var picker;
+  if (e.direction === "left") {
+    picker = tidialogs.createMultiPicker({title:"Hello World", options:["A","B","C"], selected: ["B","C"]});
+  } else {
+    picker = tidialogs.createTimePicker({hour: 10, minute: 30});
+  }
+  picker.addEventListener('click',function(e){
+    alert(JSON.stringify(e))
+  });
+  picker.show();
+});
 
