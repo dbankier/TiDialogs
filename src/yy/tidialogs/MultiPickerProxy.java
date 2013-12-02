@@ -96,6 +96,7 @@ import android.content.DialogInterface;
 
       public void show() {
         getBuilder().create().show();
+        builder = null;
       }
 
     }

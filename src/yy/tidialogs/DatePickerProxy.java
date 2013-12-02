@@ -19,7 +19,6 @@ public class DatePickerProxy extends TiViewProxy {
 		private int year;
 		private int month;
 		private int day;
-		private DatePickerDialog dialog;
 
 		public BasicDatePicker(TiViewProxy proxy) {
 			super(proxy);
@@ -27,8 +26,7 @@ public class DatePickerProxy extends TiViewProxy {
 		}
 
 		private DatePickerDialog getDialog() {
-			if (dialog == null) {
-				dialog = new DatePickerDialog(this.proxy.getActivity(),
+			return new DatePickerDialog(this.proxy.getActivity(),
 						new DatePickerDialog.OnDateSetListener() {
 							// when dialog box is closed, below method will be
 							// called.
@@ -45,9 +43,6 @@ public class DatePickerProxy extends TiViewProxy {
 								fireEvent("click", data);
 							}
 						}, year, month, day);
-			}
-			return dialog;
-
 		}
 
 		@Override
@@ -73,10 +68,6 @@ public class DatePickerProxy extends TiViewProxy {
 
 		public void show() {
 			getDialog().show();
-		}
-
-		public void hide() {
-			getDialog().dismiss();
 		}
 
 	}
@@ -105,13 +96,5 @@ public class DatePickerProxy extends TiViewProxy {
 				d.show();
 			}
 		});
-	}
-
-	@Override
-	protected void handleHide(KrollDict options) {
-		super.handleHide(options);
-
-		BasicDatePicker d = (BasicDatePicker) getOrCreateView();
-		d.hide();
 	}
 }

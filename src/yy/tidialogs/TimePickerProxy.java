@@ -17,7 +17,6 @@ import android.widget.TimePicker;
 public class TimePickerProxy extends TiViewProxy {
 	private class BasicDatePicker extends TiUIView {
 
-		private TimePickerDialog dialog;
 		int hour;
 		int minute;
 
@@ -27,8 +26,7 @@ public class TimePickerProxy extends TiViewProxy {
 		}
 
 		private TimePickerDialog getDialog() {
-			if (dialog == null) {
-				dialog = new TimePickerDialog(this.proxy.getActivity(),
+			return new TimePickerDialog(this.proxy.getActivity(),
 						new TimePickerDialog.OnTimeSetListener() {
 
 							@Override
@@ -46,9 +44,6 @@ public class TimePickerProxy extends TiViewProxy {
 							}
 						}, hour, minute, DateFormat.is24HourFormat(this.proxy
 								.getActivity()));
-			}
-			return dialog;
-
 		}
 
 		@Override
@@ -69,10 +64,6 @@ public class TimePickerProxy extends TiViewProxy {
 
 		public void show() {
 			getDialog().show();
-		}
-
-		public void hide() {
-			getDialog().dismiss();
 		}
 
 	}
@@ -101,13 +92,5 @@ public class TimePickerProxy extends TiViewProxy {
 				d.show();
 			}
 		});
-	}
-
-	@Override
-	protected void handleHide(KrollDict options) {
-		super.handleHide(options);
-
-		BasicDatePicker d = (BasicDatePicker) getOrCreateView();
-		d.hide();
 	}
 }
