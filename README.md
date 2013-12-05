@@ -1,3 +1,44 @@
+**Forked TiDialogs**
+
+Cancel button are displayed, Honeycomb later.
+
+Compatible Ti.UI.showTimePickerDialog and Ti.UI.showDatePickerDialog properties.
+Added okButtonTitle, cancelButtonTitle and value properties.
+
+## Usage
+
+### Date Picker
+
+  var datePicker = Dialog.createDatePicker({
+    okButtonTitle: 'Done',
+    cancelButtonTitle: 'Cancel',
+    value: new Date()
+  });
+  
+  datePicker.addEventListener('click', function(e){
+    if (!e.cancel) {
+      console.log(e.value);
+    }
+  });
+
+  dateDialog.show();
+
+### Time Picker
+
+  var timePicker = Dialog.createTimePicker({
+    okButtonTitle: 'Done',
+    cancelButtonTitle: 'Cancel',
+    value: new Date()
+  });
+  
+  timePicker.addEventListener('click', function(e){
+    if (!e.cancel) {
+      console.log(e.value);
+    }
+  });
+
+  timePicker.show();
+
 # TiDialogs for Android
 
 A module with the missing native Android dialogs.
