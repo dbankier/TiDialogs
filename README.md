@@ -2,7 +2,7 @@
 
 Cancel button are displayed, Honeycomb later.
 
-Compatible Ti.UI.showTimePickerDialog and Ti.UI.showDatePickerDialog properties.
+Compatible Ti.UI.Picker.showTimePickerDialog and Ti.UI.Picker.showDatePickerDialog properties.
 Added okButtonTitle, cancelButtonTitle and value properties.
 
 ## Usage
