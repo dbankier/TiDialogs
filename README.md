@@ -1,4 +1,4 @@
-**Forked TiDialogs**
+# Forked TiDialogs
 
 Cancel button are displayed, Honeycomb later.
 
@@ -9,35 +9,39 @@ Added okButtonTitle, cancelButtonTitle and value properties.
 
 ### Date Picker
 
-  var datePicker = Dialog.createDatePicker({
-    okButtonTitle: 'Done',
-    cancelButtonTitle: 'Cancel',
-    value: new Date()
-  });
-  
-  datePicker.addEventListener('click', function(e){
-    if (!e.cancel) {
-      console.log(e.value);
-    }
-  });
+~~~
+var datePicker = Dialog.createDatePicker({
+  okButtonTitle: 'Done',
+  cancelButtonTitle: 'Cancel',
+  value: new Date()
+});
 
-  dateDialog.show();
+datePicker.addEventListener('click', function(e){
+  if (!e.cancel) {
+    console.log(e.value);
+  }
+});
+
+dateDialog.show();
+~~~
 
 ### Time Picker
 
-  var timePicker = Dialog.createTimePicker({
-    okButtonTitle: 'Done',
-    cancelButtonTitle: 'Cancel',
-    value: new Date()
-  });
-  
-  timePicker.addEventListener('click', function(e){
-    if (!e.cancel) {
-      console.log(e.value);
-    }
-  });
+~~~
+var timePicker = Dialog.createTimePicker({
+  okButtonTitle: 'Done',
+  cancelButtonTitle: 'Cancel',
+  value: new Date()
+});
 
-  timePicker.show();
+timePicker.addEventListener('click', function(e){
+  if (!e.cancel) {
+    console.log(e.value);
+  }
+});
+
+timePicker.show();
+~~~
 
 # TiDialogs for Android
 
