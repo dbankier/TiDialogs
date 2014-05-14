@@ -17,7 +17,7 @@ The modules/zip files is in the the `dist` folder of the repository. Add it to y
 Require the modules with the following code:
 
 ~~~
-var Dialogs = require(yy.tidialogs);
+var Dialogs = require("yy.tidialogs");
 ~~~
 
 
