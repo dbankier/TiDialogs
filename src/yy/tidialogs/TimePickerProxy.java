@@ -32,7 +32,7 @@ public class TimePickerProxy extends TiViewProxy {
 		}
 
 		private TimePickerDialog getDialog() {
-			TimePickerDialog dialog = new TimePickerDialog(this.proxy.getActivity(),
+			TimePickerDialog picker = new TimePickerDialog(this.proxy.getActivity(),
 						new TimePickerDialog.OnTimeSetListener() {
 
 							@Override
@@ -45,7 +45,12 @@ public class TimePickerProxy extends TiViewProxy {
 
 								KrollDict data = new KrollDict();
 
-								if (clicked == DialogInterface.BUTTON_POSITIVE) {
+								if (clicked == DialogInterface.BUTTON_NEGATIVE) {
+									data.put("value", null);
+									data.put("hour", null);
+									data.put("minute", null);
+									data.put("cancel", true);
+								} else {
 									Calendar calendar = Calendar.getInstance();
 									calendar.set(Calendar.HOUR_OF_DAY, hour);
 									calendar.set(Calendar.MINUTE, minute);
@@ -55,20 +60,25 @@ public class TimePickerProxy extends TiViewProxy {
 									data.put("hour", hour);
 									data.put("minute", minute);
 									data.put("cancel", false);
-								} else {
-									data.put("value", null);
-									data.put("hour", null);
-									data.put("minute", null);
-									data.put("cancel", true);
 								}
 
 								fireEvent("click", data);
 							}
 						}, hour, minute, DateFormat.is24HourFormat(this.proxy
 								.getActivity()));
-			dialog.setCanceledOnTouchOutside(false);
+			picker.setCanceledOnTouchOutside(false);
 
-			dialog.setButton(DialogInterface.BUTTON_POSITIVE, okButtonTitle,
+/*			picker.setButton(DialogInterface.BUTTON_POSITIVE, okButtonTitle,
+				new DialogInterface.OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						Log.i("TiDialogs", "BUTTON_POSITIVE clicked");
+						clicked = which;
+					}
+				});*/
+
+			picker.setButton(DialogInterface.BUTTON_NEGATIVE, cancelButtonTitle,
 				new DialogInterface.OnClickListener() {
 
 					@Override
@@ -77,16 +87,7 @@ public class TimePickerProxy extends TiViewProxy {
 					}
 				});
 
-			dialog.setButton(DialogInterface.BUTTON_NEGATIVE, cancelButtonTitle,
-				new DialogInterface.OnClickListener() {
-
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						clicked = which;
-					}
-				});
-
-			return dialog;
+			return picker;
 		}
 
 		@Override
