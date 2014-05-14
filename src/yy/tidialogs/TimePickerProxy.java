@@ -68,16 +68,6 @@ public class TimePickerProxy extends TiViewProxy {
 								.getActivity()));
 			picker.setCanceledOnTouchOutside(false);
 
-/*			picker.setButton(DialogInterface.BUTTON_POSITIVE, okButtonTitle,
-				new DialogInterface.OnClickListener() {
-
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						Log.i("TiDialogs", "BUTTON_POSITIVE clicked");
-						clicked = which;
-					}
-				});*/
-
 			picker.setButton(DialogInterface.BUTTON_NEGATIVE, cancelButtonTitle,
 				new DialogInterface.OnClickListener() {
 
