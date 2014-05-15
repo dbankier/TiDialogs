@@ -1,48 +1,3 @@
-# Forked TiDialogs
-
-Cancel button are displayed, Honeycomb later.
-
-Compatible Ti.UI.Picker.showTimePickerDialog and Ti.UI.Picker.showDatePickerDialog properties.
-Added okButtonTitle, cancelButtonTitle and value properties.
-
-## Usage
-
-### Date Picker
-
-~~~
-var datePicker = Dialog.createDatePicker({
-  okButtonTitle: 'Done',
-  cancelButtonTitle: 'Cancel',
-  value: new Date()
-});
-
-datePicker.addEventListener('click', function(e){
-  if (!e.cancel) {
-    console.log(e.value);
-  }
-});
-
-dateDialog.show();
-~~~
-
-### Time Picker
-
-~~~
-var timePicker = Dialog.createTimePicker({
-  okButtonTitle: 'Done',
-  cancelButtonTitle: 'Cancel',
-  value: new Date()
-});
-
-timePicker.addEventListener('click', function(e){
-  if (!e.cancel) {
-    console.log(e.value);
-  }
-});
-
-timePicker.show();
-~~~
-
 # TiDialogs for Android
 
 A module with the missing native Android dialogs.
@@ -98,17 +53,24 @@ Here is an example usage:
 ~~~
 // Create the dialog
 
+// value property is priority
 var picker = Dialogs.createDatePicker({
-  day: 28,    // <-- optional
-  month: 7,   // <-- optional - java/javascript month, i.e. August
-  year: 1975  // <-- optional
+  okButtonTitle: 'Set',         // <-- optional, default "Done"
+  cancelButtonTitle: 'Cancel',  // <-- optional, default "Cancel"
+  value: new Date(),            // <-- optional
+  day: 28,                      // <-- optional
+  month: 7,                     // <-- optional - java/javascript month, i.e. August
+  year: 1975                    // <-- optional
 });
 
 // Add the click listener
 picker.addEventListener('click',function(e){
-  var day   = e.day;
-  var month = e.month; // Jan === 0
-  var year  = e.year;
+  if (!e.cancel) {
+    var value = e.value; // JavaScript Date object
+    var day   = e.day;
+    var month = e.month; // Jan === 0
+    var year  = e.year;
+  }
 });
 
 // open it
@@ -122,20 +84,33 @@ Here is an example usage:
 ~~~
 // Create the dialog
 
+// value property is priority
 var picker = Dialogs.createTimePicker({
-  hour: 10,    // <-- optional
-  minute: 30   // <-- optional - java/javascript month, i.e. August
+  okButtonTitle: 'Set',         // <-- optional, default "Done"
+  cancelButtonTitle: 'Cancel',  // <-- optional, default "Cancel"
+  value: new Date(),            // <-- optional, JavaScript Date object
+  hour: 10,                     // <-- optional
+  minute: 30                    // <-- optional
 });
 
 // Add the click listener
 picker.addEventListener('click',function(e){
-  var hour   = e.hour;
-  var minute = e.minute; 
+  if (!e.cancel) {
+    var value = e.value; // JavaScript Date object
+    var hour   = e.hour;
+    var minute = e.minute; 
+  }
 });
 
 // open it
 picker.show();
 ~~~
+
+
+## Changelog
+* Added cancel button are displayed, Honeycomb later.
+* Added okButtonTitle, cancelButtonTitle and value properties.
+* Compatible Ti.UI.Picker.showTimePickerDialog and Ti.UI.Picker.showDatePickerDialog properties.
 
 
 ###Licence: MIT
