@@ -33,13 +33,20 @@ Here is an example usage:
 var picker = Dialogs.createMultiPicker({
   title:"Hello World", 
   options:["A","B","C"], 
-  selected: ["B","C"] // <-- optional
+  selected: ["B","C"],       // <-- optional
+  okButtonTitle : "Yep",     // <-- optional
+  cancelButtonTitle : "Nah"  // <-- optional
 });
 
 // Add the click listener
 picker.addEventListener('click',function(e){
   var indexes    = e.indexes;    // selected indexes
   var selections = e.selections; // the actual selected options.
+});
+
+// Cancel listener
+picker.addEventListener('cancel', function() {
+  Ti.API.info("dialog was cancelled");
 });
 
 // open it
@@ -73,6 +80,11 @@ picker.addEventListener('click',function(e){
   }
 });
 
+// Cancel listener
+picker.addEventListener('cancel', function() {
+  Ti.API.info("dialog was cancelled");
+});
+
 // open it
 picker.show();
 ~~~
@@ -100,6 +112,11 @@ picker.addEventListener('click',function(e){
     var hour   = e.hour;
     var minute = e.minute; 
   }
+});
+
+// Cancel listener
+picker.addEventListener('cancel', function() {
+  Ti.API.info("dialog was cancelled");
 });
 
 // open it
