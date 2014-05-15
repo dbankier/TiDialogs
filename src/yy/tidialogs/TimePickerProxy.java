@@ -19,7 +19,6 @@ import android.widget.TimePicker;
 @Kroll.proxy(creatableInModule = TidialogsModule.class)
 public class TimePickerProxy extends TiViewProxy {
 	private class BasicDatePicker extends TiUIView {
-		private int clicked;
 
 		private int hour;
 		private int minute;
@@ -45,12 +44,7 @@ public class TimePickerProxy extends TiViewProxy {
 								minute = selectedMinute;
 
 								KrollDict data = new KrollDict();
-								if (clicked == DialogInterface.BUTTON_NEGATIVE) {
-									data.put("value", null);
-									data.put("hour", null);
-									data.put("minute", null);
-									fireEvent("cancel", data);
-								} else {
+
 									Calendar calendar = Calendar.getInstance();
 									calendar.set(Calendar.HOUR_OF_DAY, hour);
 									calendar.set(Calendar.MINUTE, minute);
@@ -60,7 +54,6 @@ public class TimePickerProxy extends TiViewProxy {
 									data.put("hour", hour);
 									data.put("minute", minute);
                                     fireEvent("click", data);
-								}
 
 							}
 						}, hour, minute, DateFormat.is24HourFormat(this.proxy
@@ -68,21 +61,14 @@ public class TimePickerProxy extends TiViewProxy {
 
 			picker.setCanceledOnTouchOutside(false);
 
-			picker.setButton(DialogInterface.BUTTON_POSITIVE, okButtonTitle,
-				new DialogInterface.OnClickListener() {
-
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						clicked = which;
-					}
-			});
+			picker.setButton(DialogInterface.BUTTON_POSITIVE, okButtonTitle, picker);
 
 			picker.setButton(DialogInterface.BUTTON_NEGATIVE, cancelButtonTitle,
 				new DialogInterface.OnClickListener() {
 
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						clicked = which;
+						fireEvent("cancel", new KrollDict());
 					}
 				});
 

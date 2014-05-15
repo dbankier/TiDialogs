@@ -18,7 +18,6 @@ import android.widget.DatePicker;
 @Kroll.proxy(creatableInModule = TidialogsModule.class)
 public class DatePickerProxy extends TiViewProxy {
 	private class BasicDatePicker extends TiUIView {
-		private int clicked;
 
 		private int year;
 		private int month;
@@ -46,9 +45,6 @@ public class DatePickerProxy extends TiViewProxy {
 
 								KrollDict data = new KrollDict();
 
-								if (clicked == DialogInterface.BUTTON_NEGATIVE) {
-									fireEvent("cancel", data);
-								} else {
 									Calendar calendar = Calendar.getInstance();
 									calendar.set(Calendar.YEAR, year);
 									calendar.set(Calendar.MONTH, month);
@@ -59,28 +55,20 @@ public class DatePickerProxy extends TiViewProxy {
 									data.put("year", year);
 									data.put("month", month);
 									data.put("day", day);
-                                    fireEvent("click", data);
-								}
+                                    fireEvent("click", data);		
 
 							}
 						}, year, month, day);
 			picker.setCanceledOnTouchOutside(false);
 
-			picker.setButton(DialogInterface.BUTTON_POSITIVE, okButtonTitle,
-				new DialogInterface.OnClickListener() {
-
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						clicked = which;
-					}
-			});
+			picker.setButton(DialogInterface.BUTTON_POSITIVE, okButtonTitle, picker);
 
 			picker.setButton(DialogInterface.BUTTON_NEGATIVE, cancelButtonTitle,
 				new DialogInterface.OnClickListener() {
 
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						clicked = which;
+						fireEvent("cancel", new KrollDict());
 					}
 				});
 
