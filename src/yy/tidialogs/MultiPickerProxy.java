@@ -22,6 +22,8 @@ import android.content.DialogInterface;
     private class MultiPicker extends TiUIView {
 
       Builder builder;
+      
+      
 
       public MultiPicker(TiViewProxy proxy) {
         super(proxy);
@@ -39,9 +41,21 @@ import android.content.DialogInterface;
       @Override
       public void processProperties(KrollDict d) {
         super.processProperties(d);
+        String okButtonTitle;
+  	    String cancelButtonTitle;
         if (d.containsKey("title")) {
           getBuilder().setTitle(d.getString("title"));
         }
+        if (d.containsKey("okButtonTitle")) {
+			okButtonTitle = d.getString("okButtonTitle");
+		} else {
+			okButtonTitle =  this.proxy.getActivity().getApplication().getResources().getString(R.string.ok);
+		}
+		if (d.containsKey("cancelButtonTitle")) {
+			cancelButtonTitle = d.getString("cancelButtonTitle");
+		} else {
+			cancelButtonTitle = this.proxy.getActivity().getApplication().getResources().getString(R.string.cancel);
+		}
         if (d.containsKey("options")) {
           final String[] options = d.getStringArray("options");
           final ArrayList<Integer> mSelectedItems = new ArrayList<Integer>();
@@ -65,7 +79,7 @@ import android.content.DialogInterface;
                 }
               }
             })
-          .setPositiveButton(R.string.ok,
+          .setPositiveButton(okButtonTitle,
               new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog,
@@ -83,11 +97,11 @@ import android.content.DialogInterface;
                   fireEvent("click", data);
                 }
               })
-          .setNegativeButton(R.string.cancel,
+          .setNegativeButton(cancelButtonTitle,
               new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int id) {
-
+                  fireEvent("cancel", new KrollDict());
                 }
               });
         }

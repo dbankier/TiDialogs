@@ -9,6 +9,7 @@ import org.appcelerator.titanium.proxy.TiViewProxy;
 import org.appcelerator.titanium.util.TiUIHelper;
 import org.appcelerator.titanium.view.TiUIView;
 
+import android.R;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
@@ -46,11 +47,7 @@ public class DatePickerProxy extends TiViewProxy {
 								KrollDict data = new KrollDict();
 
 								if (clicked == DialogInterface.BUTTON_NEGATIVE) {
-									data.put("value", null);
-									data.put("year", null);
-									data.put("month", null);
-									data.put("day", null);
-									data.put("cancel", true);
+									fireEvent("cancel", data);
 								} else {
 									Calendar calendar = Calendar.getInstance();
 									calendar.set(Calendar.YEAR, year);
@@ -62,22 +59,21 @@ public class DatePickerProxy extends TiViewProxy {
 									data.put("year", year);
 									data.put("month", month);
 									data.put("day", day);
-									data.put("cancel", false);
+                                    fireEvent("click", data);
 								}
 
-								fireEvent("click", data);
 							}
 						}, year, month, day);
 			picker.setCanceledOnTouchOutside(false);
 
-/*			picker.setButton(DialogInterface.BUTTON_POSITIVE, okButtonTitle,
+			picker.setButton(DialogInterface.BUTTON_POSITIVE, okButtonTitle,
 				new DialogInterface.OnClickListener() {
 
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						clicked = which;
 					}
-				});*/
+			});
 
 			picker.setButton(DialogInterface.BUTTON_NEGATIVE, cancelButtonTitle,
 				new DialogInterface.OnClickListener() {
@@ -121,12 +117,12 @@ public class DatePickerProxy extends TiViewProxy {
 			if (d.containsKey("okButtonTitle")) {
 				okButtonTitle = d.getString("okButtonTitle");
 			} else {
-				okButtonTitle = "Done";
+				okButtonTitle =  this.proxy.getActivity().getApplication().getResources().getString(R.string.ok);
 			}
 			if (d.containsKey("cancelButtonTitle")) {
 				cancelButtonTitle = d.getString("cancelButtonTitle");
 			} else {
-				cancelButtonTitle = "Cancel";
+				cancelButtonTitle = this.proxy.getActivity().getApplication().getResources().getString(R.string.cancel);
 			}
 		}
 

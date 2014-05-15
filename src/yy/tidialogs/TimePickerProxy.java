@@ -9,6 +9,7 @@ import org.appcelerator.titanium.proxy.TiViewProxy;
 import org.appcelerator.titanium.util.TiUIHelper;
 import org.appcelerator.titanium.view.TiUIView;
 
+import android.R;
 import android.app.Activity;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
@@ -44,12 +45,11 @@ public class TimePickerProxy extends TiViewProxy {
 								minute = selectedMinute;
 
 								KrollDict data = new KrollDict();
-
 								if (clicked == DialogInterface.BUTTON_NEGATIVE) {
 									data.put("value", null);
 									data.put("hour", null);
 									data.put("minute", null);
-									data.put("cancel", true);
+									fireEvent("cancel", data);
 								} else {
 									Calendar calendar = Calendar.getInstance();
 									calendar.set(Calendar.HOUR_OF_DAY, hour);
@@ -59,14 +59,23 @@ public class TimePickerProxy extends TiViewProxy {
 									data.put("value", value);
 									data.put("hour", hour);
 									data.put("minute", minute);
-									data.put("cancel", false);
+                                    fireEvent("click", data);
 								}
 
-								fireEvent("click", data);
 							}
 						}, hour, minute, DateFormat.is24HourFormat(this.proxy
 								.getActivity()));
+
 			picker.setCanceledOnTouchOutside(false);
+
+			picker.setButton(DialogInterface.BUTTON_POSITIVE, okButtonTitle,
+				new DialogInterface.OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						clicked = which;
+					}
+			});
 
 			picker.setButton(DialogInterface.BUTTON_NEGATIVE, cancelButtonTitle,
 				new DialogInterface.OnClickListener() {
@@ -105,12 +114,12 @@ public class TimePickerProxy extends TiViewProxy {
 			if (d.containsKey("okButtonTitle")) {
 				okButtonTitle = d.getString("okButtonTitle");
 			} else {
-				okButtonTitle = "Done";
+				okButtonTitle =  this.proxy.getActivity().getApplication().getResources().getString(R.string.ok);
 			}
 			if (d.containsKey("cancelButtonTitle")) {
 				cancelButtonTitle = d.getString("cancelButtonTitle");
 			} else {
-				cancelButtonTitle = "Cancel";
+				cancelButtonTitle = this.proxy.getActivity().getApplication().getResources().getString(R.string.cancel);
 			}
 		}
 
