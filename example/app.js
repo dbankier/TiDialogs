@@ -6,30 +6,67 @@
 
 // open a single window
 var win = Ti.UI.createWindow({
-	backgroundColor:'white'
+	backgroundColor:'white',
+  layout: 'vertical',
 });
 win.open();
 
 // TODO: write your module tests here
 var tidialogs = require('yy.tidialogs');
 
-win.addEventListener('doubletap', function() {
-  var picker = tidialogs.createDatePicker({day:28, month:7, year: 1980});
-  picker.addEventListener('click',function(e){
-    alert(JSON.stringify(e))
-  });
-  picker.show();
-});
-win.addEventListener('swipe', function(e) {
-  var picker;
-  if (e.direction === "left") {
-    picker = tidialogs.createMultiPicker({title:"Hello World", options:["A","B","C"], selected: ["B","C"]});
-  } else {
-    picker = tidialogs.createTimePicker({hour: 10, minute: 30});
-  }
-  picker.addEventListener('click',function(e){
-    alert(JSON.stringify(e))
-  });
-  picker.show();
-});
+var buttons = [ {
+    title: 'legacy date',
+    dialog: function () {
+      return tidialogs.createDatePicker({day:28, month:7, year: 1980});
+    }
+},  {
+    title: 'new date, custom buttons',
+    dialog: function () {
+      var date = new Date();
+      date.setMonth(2);
+      return tidialogs.createDatePicker({value: date, okButtonTitle: "Yep", cancelButtonTitle:"Nah"});
+    }
+},{
+    title: 'legacy time',
+    dialog: function () {
+      return tidialogs.createTimePicker({hour:10, minute:30});
+    }
+},  {
+    title: 'new time, custom buttons',
+    dialog: function () {
+      var date = new Date();
+      date.setHours(10);
+      return tidialogs.createTimePicker({value: date, okButtonTitle: "Yep", cancelButtonTitle:"Nah"});
+    }
+},  {
+    title: 'multi picker',
+    dialog: function () {
+      var date = new Date();
+      date.setHours(10);
+      return tidialogs.createMultiPicker({title:"Hello World", options:["A","B","C"], selected: ["B","C"]});
+    }
+},  {
+    title: 'multi, custom buttons',
+    dialog: function () {
+      var date = new Date();
+      date.setHours(10);
+      return tidialogs.createMultiPicker({title:"Hello World", options:["A","B","C"], selected: ["B","C"], okButtonTitle: "Yep", cancelButtonTitle:"Nah"});
+    }
+}]
 
+
+buttons.forEach(function(o) {
+  var button = Ti.UI.createButton({title: o.title});
+  button.addEventListener("click", function() {
+    var dialog = o.dialog();
+    dialog.addEventListener("click", function(o){
+      Ti.API.debug("click");
+      Ti.API.debug(JSON.stringify(o));
+    });
+    dialog.addEventListener("cancel", function(o){
+      Ti.API.debug("cancel");
+    });
+    dialog.show();
+  });
+  win.add(button);
+});
