@@ -3,16 +3,16 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="build/.apt_generated"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="/Users/david/android-sdk-mac_86/platforms/android-10/android.jar"/>
-	<classpathentry kind="lib" path="/Users/david/android-sdk-mac_86/add-ons/addon-google_apis-google-10/libs/maps.jar"/>
+	<classpathentry kind="lib" path="/Users/david/Android/platforms/android-10/android.jar"/>
+	<classpathentry kind="lib" path="/Users/david/Android/add-ons/addon-google_apis-google-11/libs/maps.jar"/>
 	<classpathentry kind="lib" path="/Users/david/Library/Application Support/Titanium/mobilesdk/osx/3.2.2.GA/android/titanium.jar"/>
-	<classpathentry kind="lib" path="/Users/david/Library/Application Support/Titanium/mobilesdk/osx/3.1.3.GA/android/kroll-common.jar"/>
-	<classpathentry kind="lib" path="/Users/david/Library/Application Support/Titanium/mobilesdk/osx/3.1.3.GA/android/kroll-apt.jar"/>
+	<classpathentry kind="lib" path="/Users/david/Library/Application Support/Titanium/mobilesdk/osx/3.2.2.GA/android/kroll-common.jar"/>
+	<classpathentry kind="lib" path="/Users/david/Library/Application Support/Titanium/mobilesdk/osx/3.2.2.GA/android/kroll-apt.jar"/>
 	<classpathentry kind="src" path=".apt_generated">
 		<attributes>
 			<attribute name="optional" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/Users/david/android-sdk-mac_86/extras/android/support/v4/android-support-v4.jar"/>
+	<classpathentry kind="lib" path="/Users/david/Android/extras/android/support/v4/android-support-v4.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
