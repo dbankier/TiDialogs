@@ -43,7 +43,7 @@ public class MultiPickerProxy extends TiViewProxy {
 			super.processProperties(properties);
 			String okButtonTitle;
 			String cancelButtonTitle;
-			boolean cancellable = false;
+			boolean cancellable = true;
 
 			if (properties.containsKey("title")) {
 				getBuilder().setTitle(properties.getString("title"));
