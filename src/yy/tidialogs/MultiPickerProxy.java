@@ -18,126 +18,154 @@ import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 
 @Kroll.proxy(creatableInModule = TidialogsModule.class)
-  public class MultiPickerProxy extends TiViewProxy {
-    private class MultiPicker extends TiUIView {
+public class MultiPickerProxy extends TiViewProxy {
+	private class MultiPicker extends TiUIView {
 
-      Builder builder;
-      
-      
+		Builder builder;
 
-      public MultiPicker(TiViewProxy proxy) {
-        super(proxy);
 
-      }
 
-      private Builder getBuilder() {
-        if (builder == null) {
-          builder = new AlertDialog.Builder(this.proxy.getActivity());
-          builder.setCancelable(true);
-        }
-        return builder;
-      }
+		public MultiPicker(TiViewProxy proxy) {
+			super(proxy);
 
-      @Override
-      public void processProperties(KrollDict d) {
-        super.processProperties(d);
-        String okButtonTitle;
-  	    String cancelButtonTitle;
-        if (d.containsKey("title")) {
-          getBuilder().setTitle(d.getString("title"));
-        }
-        if (d.containsKey("okButtonTitle")) {
-			okButtonTitle = d.getString("okButtonTitle");
-		} else {
-			okButtonTitle =  this.proxy.getActivity().getApplication().getResources().getString(R.string.ok);
 		}
-		if (d.containsKey("cancelButtonTitle")) {
-			cancelButtonTitle = d.getString("cancelButtonTitle");
-		} else {
-			cancelButtonTitle = this.proxy.getActivity().getApplication().getResources().getString(R.string.cancel);
+
+		private Builder getBuilder() {
+			if (builder == null) {
+				builder = new AlertDialog.Builder(this.proxy.getActivity());
+				builder.setCancelable(true);
+			}
+			return builder;
 		}
-        if (d.containsKey("options")) {
-          final String[] options = d.getStringArray("options");
-          final ArrayList<Integer> mSelectedItems = new ArrayList<Integer>();
 
-          boolean[] checked = new boolean[options.length];
-          Arrays.fill(checked, Boolean.FALSE);
-          if (d.containsKey("selected")) {
-            List<String> s = Arrays.asList(d.getStringArray("selected"));
-            for (int i = 0; i < options.length; i++) {
-              checked[i] = s.contains(options[i]);
-            }
-          }
-          getBuilder()
-            .setMultiChoiceItems(options, checked, new DialogInterface.OnMultiChoiceClickListener() {
-              @Override
-              public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-                if (isChecked) {
-                  mSelectedItems.add(which);
-                } else if (mSelectedItems .contains(which)) {
-                  mSelectedItems.remove(Integer.valueOf(which));
-                }
-              }
-            })
-          .setPositiveButton(okButtonTitle,
-              new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog,
-                  int id) {
-                  // convert to int array
+		@Override
+		public void processProperties(KrollDict properties) {
+			super.processProperties(properties);
+			String okButtonTitle;
+			String cancelButtonTitle;
+			boolean cancellable = false;
 
-                  ArrayList<String> selections = new ArrayList<String>();
-                  for (Integer s: mSelectedItems) {
-                    selections.add(options[s]);
-                  }
+			if (properties.containsKey("title")) {
+				getBuilder().setTitle(properties.getString("title"));
+			}
 
-                  KrollDict data = new KrollDict();
-                  data.put("indexes", mSelectedItems .toArray(new Integer[mSelectedItems.size()]));
-                  data.put("selections", selections.toArray(new String[selections.size()]));
-                  fireEvent("click", data);
-                }
-              })
-          .setNegativeButton(cancelButtonTitle,
-              new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int id) {
-                  fireEvent("cancel", new KrollDict());
-                }
-              });
-        }
+			if (properties.containsKey("okButtonTitle")) {
+				okButtonTitle = properties.getString("okButtonTitle");
+			} else {
+				okButtonTitle =  this.proxy.getActivity().getApplication().getResources().getString(R.string.ok);
+			}
 
-      }
+			if (properties.containsKey("cancelButtonTitle")) {
+				cancelButtonTitle = properties.getString("cancelButtonTitle");
+			} else {
+				cancelButtonTitle = this.proxy.getActivity().getApplication().getResources().getString(R.string.cancel);
+			}
 
-      public void show() {
-        getBuilder().create().show();
-        builder = null;
-      }
+			if (properties.containsKey("canCancel")) {
+				cancellable = properties.getBoolean("canCancel");
+			}
 
-    }
 
-    public MultiPickerProxy() {
-      super();
-    }
+			if (properties.containsKey("options")) {
+				final String[] options = properties.getStringArray("options");
 
-    @Override
-    public TiUIView createView(Activity activity) {
-      return new MultiPicker(this);
-    }
+				// only selected items are stored with corresponding index
+				final ArrayList<Integer> mSelectedItems = new ArrayList<Integer>();
 
-    @Override
-    public void handleCreationDict(KrollDict options) {
-      super.handleCreationDict(options);
-    }
+				//  mark all items as unselected
+				boolean[] checked = new boolean[options.length];
+				Arrays.fill(checked, Boolean.FALSE);
 
-    @Override
-    protected void handleShow(KrollDict options) {
-      super.handleShow(options);
-      TiUIHelper.runUiDelayedIfBlock(new Runnable() {
-        @Override
-        public void run() {
-          MultiPicker d = (MultiPicker) getOrCreateView();
-          d.show();
-        }
-      });
-    }
-  }
+				// are there any preselections?
+				if (properties.containsKey("selected")) {
+					List<String> s = Arrays.asList(properties.getStringArray("selected"));
+					for (int i = 0; i < options.length; i++) {
+						checked[i] = s.contains(options[i]);
+						if(checked[i] == true)
+							mSelectedItems.add(i);  // keep info about preselected items!
+					}
+				}
+				getBuilder()
+				.setMultiChoiceItems(options, checked, new DialogInterface.OnMultiChoiceClickListener() {
+					// called whenever an item is clicked, toggles selection info
+					@Override
+					public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+						if (isChecked) {
+							// we can be sure, item is not already in selection list
+							mSelectedItems.add(which);
+						} else if (mSelectedItems .contains(which)) {
+							mSelectedItems.remove(Integer.valueOf(which));
+						}
+					}
+				})
+
+				// ok returns indexes of selected items and the corresponding selected items -> wording is not the best
+				.setPositiveButton(okButtonTitle,
+						new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog,
+							int id) {
+						// convert to int array
+
+						ArrayList<String> selections = new ArrayList<String>();
+						for (Integer s: mSelectedItems) {
+							selections.add(options[s]);
+						}
+
+						KrollDict data = new KrollDict();
+						data.put("indexes", mSelectedItems .toArray(new Integer[mSelectedItems.size()]));
+						data.put("selections", selections.toArray(new String[selections.size()]));
+						fireEvent("click", data);
+					}
+				});
+
+				if(cancellable == true) {
+
+					// cancel returns nothing
+					getBuilder().setNegativeButton(cancelButtonTitle,
+							new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int id) {
+							fireEvent("cancel", new KrollDict());
+						}
+					});
+				} else {
+					getBuilder().setCancelable(false);
+				}
+			}
+
+		}
+
+		public void show() {
+			getBuilder().create().show();
+			builder = null;
+		}
+
+	}
+
+	public MultiPickerProxy() {
+		super();
+	}
+
+	@Override
+	public TiUIView createView(Activity activity) {
+		return new MultiPicker(this);
+	}
+
+	@Override
+	public void handleCreationDict(KrollDict options) {
+		super.handleCreationDict(options);
+	}
+
+	@Override
+	protected void handleShow(KrollDict options) {
+		super.handleShow(options);
+		TiUIHelper.runUiDelayedIfBlock(new Runnable() {
+			@Override
+			public void run() {
+				MultiPicker d = (MultiPicker) getOrCreateView();
+				d.show();
+			}
+		});
+	}
+}
