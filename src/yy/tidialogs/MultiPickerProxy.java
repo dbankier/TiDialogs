@@ -9,9 +9,9 @@ import org.appcelerator.kroll.annotations.Kroll;
 import org.appcelerator.titanium.proxy.TiViewProxy;
 import org.appcelerator.titanium.util.TiUIHelper;
 import org.appcelerator.titanium.view.TiUIView;
+import org.appcelerator.kroll.common.Log;
 
 import android.R;
-//import android.R;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
@@ -19,6 +19,8 @@ import android.content.DialogInterface;
 
 @Kroll.proxy(creatableInModule = TidialogsModule.class)
 public class MultiPickerProxy extends TiViewProxy {
+	private static final String LCAT = TidialogsModule.LCAT;
+
 	private class MultiPicker extends TiUIView {
 		Builder builder;
 
@@ -67,26 +69,26 @@ public class MultiPickerProxy extends TiViewProxy {
 				final String[] options = properties.getStringArray("options");
 
 				// only selected items are stored with corresponding index
-				final ArrayList<Integer> mSelectedItems = new ArrayList<Integer>();
+				final ArrayList<Integer> selectedItems = new ArrayList<Integer>();
 
-				final ArrayList<Boolean> resultList = new ArrayList<Boolean>();
-				for (Boolean res : resultList) {
-					res = Boolean.FALSE;
-				}
+				final boolean[] resultList = new boolean[options.length];
+				Arrays.fill(resultList, Boolean.FALSE);
 
 				// mark all items as unselected
 				boolean[] checked = new boolean[options.length];
 				Arrays.fill(checked, Boolean.FALSE);
 
 				// are there any preselections?
-				if (properties.containsKey("selected")) {
+				if (properties.containsKeyAndNotNull("selected")) {
 					List<String> s = Arrays.asList(properties
 							.getStringArray("selected"));
 					for (int i = 0; i < options.length; i++) {
 						checked[i] = s.contains(options[i]);
-						if (checked[i] == true)
-							mSelectedItems.add(i); // keep info about
+						if (checked[i] == true) {
+							resultList[i] = Boolean.TRUE;
+							selectedItems.add(i); // keep info about
 													// preselected items!
+						}
 					}
 				}
 				getBuilder().setMultiChoiceItems(options, checked,
@@ -96,22 +98,23 @@ public class MultiPickerProxy extends TiViewProxy {
 							@Override
 							public void onClick(DialogInterface dialog,
 									int which, boolean isChecked) {
-								resultList.set(which, isChecked);
+								resultList[which] = isChecked;
+								Log.d(LCAT, resultList.toString());
 								KrollDict kd = new KrollDict();
-								kd.put("index",which);
-								kd.put("checked",isChecked);
+								kd.put("index", which);
+								kd.put("checked", isChecked);
+								kd.put("value", isChecked);
 								if (hasListeners("change")) {
-									fireEvent("change",kd);
+									fireEvent("change", kd);
 								}
-								
+
 								if (isChecked) {
 									// we can be sure, item is not already in
 									// selection list
-									mSelectedItems.add(which);
+									selectedItems.add(which);
 
-								} else if (mSelectedItems.contains(which)) {
-									mSelectedItems.remove(Integer
-											.valueOf(which));
+								} else if (selectedItems.contains(which)) {
+									selectedItems.remove(Integer.valueOf(which));
 								}
 							}
 						})
@@ -126,20 +129,20 @@ public class MultiPickerProxy extends TiViewProxy {
 										// convert to int array
 
 										ArrayList<String> selections = new ArrayList<String>();
-										for (Integer s : mSelectedItems) {
+										for (Integer s : selectedItems) {
 											selections.add(options[s]);
 										}
 
 										KrollDict data = new KrollDict();
 										data.put(
 												"indexes",
-												mSelectedItems
-														.toArray(new Integer[mSelectedItems
+												selectedItems
+														.toArray(new Integer[selectedItems
 																.size()]));
 										data.put("selections", selections
 												.toArray(new String[selections
 														.size()]));
-										data.put("result", resultList.toArray());
+										data.put("result", resultList);
 										if (hasListeners("click"))
 											fireEvent("click", data);
 									}
@@ -166,6 +169,7 @@ public class MultiPickerProxy extends TiViewProxy {
 		public void show() {
 			getBuilder().create().show();
 			builder = null;
+			Log.d(LCAT, "show Dialog");
 		}
 
 	}
