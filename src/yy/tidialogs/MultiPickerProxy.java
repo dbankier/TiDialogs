@@ -20,14 +20,10 @@ import android.content.DialogInterface;
 @Kroll.proxy(creatableInModule = TidialogsModule.class)
 public class MultiPickerProxy extends TiViewProxy {
 	private class MultiPicker extends TiUIView {
-
 		Builder builder;
-
-
 
 		public MultiPicker(TiViewProxy proxy) {
 			super(proxy);
-
 		}
 
 		private Builder getBuilder() {
@@ -52,19 +48,20 @@ public class MultiPickerProxy extends TiViewProxy {
 			if (properties.containsKey("okButtonTitle")) {
 				okButtonTitle = properties.getString("okButtonTitle");
 			} else {
-				okButtonTitle =  this.proxy.getActivity().getApplication().getResources().getString(R.string.ok);
+				okButtonTitle = this.proxy.getActivity().getApplication()
+						.getResources().getString(R.string.ok);
 			}
 
 			if (properties.containsKey("cancelButtonTitle")) {
 				cancelButtonTitle = properties.getString("cancelButtonTitle");
 			} else {
-				cancelButtonTitle = this.proxy.getActivity().getApplication().getResources().getString(R.string.cancel);
+				cancelButtonTitle = this.proxy.getActivity().getApplication()
+						.getResources().getString(R.string.cancel);
 			}
 
 			if (properties.containsKey("canCancel")) {
 				cancellable = properties.getBoolean("canCancel");
 			}
-
 
 			if (properties.containsKey("options")) {
 				final String[] options = properties.getStringArray("options");
@@ -72,63 +69,93 @@ public class MultiPickerProxy extends TiViewProxy {
 				// only selected items are stored with corresponding index
 				final ArrayList<Integer> mSelectedItems = new ArrayList<Integer>();
 
-				//  mark all items as unselected
+				final ArrayList<Boolean> resultList = new ArrayList<Boolean>();
+				for (Boolean res : resultList) {
+					res = Boolean.FALSE;
+				}
+
+				// mark all items as unselected
 				boolean[] checked = new boolean[options.length];
 				Arrays.fill(checked, Boolean.FALSE);
 
 				// are there any preselections?
 				if (properties.containsKey("selected")) {
-					List<String> s = Arrays.asList(properties.getStringArray("selected"));
+					List<String> s = Arrays.asList(properties
+							.getStringArray("selected"));
 					for (int i = 0; i < options.length; i++) {
 						checked[i] = s.contains(options[i]);
-						if(checked[i] == true)
-							mSelectedItems.add(i);  // keep info about preselected items!
+						if (checked[i] == true)
+							mSelectedItems.add(i); // keep info about
+													// preselected items!
 					}
 				}
-				getBuilder()
-				.setMultiChoiceItems(options, checked, new DialogInterface.OnMultiChoiceClickListener() {
-					// called whenever an item is clicked, toggles selection info
-					@Override
-					public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-						if (isChecked) {
-							// we can be sure, item is not already in selection list
-							mSelectedItems.add(which);
-						} else if (mSelectedItems .contains(which)) {
-							mSelectedItems.remove(Integer.valueOf(which));
-						}
-					}
-				})
+				getBuilder().setMultiChoiceItems(options, checked,
+						new DialogInterface.OnMultiChoiceClickListener() {
+							// called whenever an item is clicked, toggles
+							// selection info
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which, boolean isChecked) {
+								resultList.set(which, isChecked);
+								KrollDict kd = new KrollDict();
+								kd.put("index",which);
+								kd.put("checked",isChecked);
+								if (hasListeners("change")) {
+									fireEvent("change",kd);
+								}
+								
+								if (isChecked) {
+									// we can be sure, item is not already in
+									// selection list
+									mSelectedItems.add(which);
 
-				// ok returns indexes of selected items and the corresponding selected items -> wording is not the best
-				.setPositiveButton(okButtonTitle,
-						new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog,
-							int id) {
-						// convert to int array
+								} else if (mSelectedItems.contains(which)) {
+									mSelectedItems.remove(Integer
+											.valueOf(which));
+								}
+							}
+						})
 
-						ArrayList<String> selections = new ArrayList<String>();
-						for (Integer s: mSelectedItems) {
-							selections.add(options[s]);
-						}
+				// ok returns indexes of selected items and the corresponding
+				// selected items -> wording is not the best
+						.setPositiveButton(okButtonTitle,
+								new DialogInterface.OnClickListener() {
+									@Override
+									public void onClick(DialogInterface dialog,
+											int id) {
+										// convert to int array
 
-						KrollDict data = new KrollDict();
-						data.put("indexes", mSelectedItems .toArray(new Integer[mSelectedItems.size()]));
-						data.put("selections", selections.toArray(new String[selections.size()]));
-						fireEvent("click", data);
-					}
-				});
+										ArrayList<String> selections = new ArrayList<String>();
+										for (Integer s : mSelectedItems) {
+											selections.add(options[s]);
+										}
 
-				if(cancellable == true) {
+										KrollDict data = new KrollDict();
+										data.put(
+												"indexes",
+												mSelectedItems
+														.toArray(new Integer[mSelectedItems
+																.size()]));
+										data.put("selections", selections
+												.toArray(new String[selections
+														.size()]));
+										data.put("result", resultList.toArray());
+										if (hasListeners("click"))
+											fireEvent("click", data);
+									}
+								});
+
+				if (cancellable == true) {
 
 					// cancel returns nothing
 					getBuilder().setNegativeButton(cancelButtonTitle,
 							new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int id) {
-							fireEvent("cancel", new KrollDict());
-						}
-					});
+								@Override
+								public void onClick(DialogInterface dialog,
+										int id) {
+									fireEvent("cancel", new KrollDict());
+								}
+							});
 				} else {
 					getBuilder().setCancelable(false);
 				}
