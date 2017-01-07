@@ -2,17 +2,17 @@
 # this is your module manifest and used by Titanium
 # during compilation, packaging, distribution, etc.
 #
-version: 0.4
-apiversion: 2
-description: My module
-author: Your Name
-license: Specify your license
-copyright: Copyright (c) 2013 by Your Company
-
+version: 3.0.0
+apiversion: 3
+description: Ti.Dialogs
+author: David Bankier
+license: MIT
+copyright: Copyright (c) 2017 by David Bankier
+architectures: armeabi-v7a;x86
 
 # these should not be edited
 name: tidialogs
 moduleid: yy.tidialogs
 guid: 352d588a-599c-4623-b2ee-949d1dd7e562
 platform: android
-minsdk: 3.1.3.GA
+minsdk: 6.0.0
