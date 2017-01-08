@@ -1,5 +1,6 @@
 package yy.tidialogs;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -7,8 +8,12 @@ import java.util.List;
 import org.appcelerator.kroll.KrollDict;
 import org.appcelerator.kroll.KrollFunction;
 import org.appcelerator.kroll.annotations.Kroll;
+import org.appcelerator.titanium.TiBlob;
+import org.appcelerator.titanium.io.TiBaseFile;
+import org.appcelerator.titanium.io.TiFileFactory;
 import org.appcelerator.titanium.proxy.TiViewProxy;
 import org.appcelerator.titanium.util.TiUIHelper;
+import org.appcelerator.titanium.view.TiDrawableReference;
 import org.appcelerator.titanium.view.TiUIView;
 import org.appcelerator.kroll.common.Log;
 
@@ -17,6 +22,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
 
 @Kroll.proxy(creatableInModule = TidialogsModule.class)
 public class MultiPickerProxy extends TiViewProxy {
@@ -43,7 +49,7 @@ public class MultiPickerProxy extends TiViewProxy {
 			super.processProperties(properties);
 			String okButtonTitle;
 			String cancelButtonTitle;
-
+			String message;
 			boolean cancellable = true;
 			if (properties.containsKeyAndNotNull("onchange")) {
 				Object o = properties.get("onchange");
@@ -51,10 +57,17 @@ public class MultiPickerProxy extends TiViewProxy {
 					onChange = (KrollFunction) o;
 				}
 			}
-			if (properties.containsKey("title")) {
+			if (properties.containsKeyAndNotNull("title")) {
 				getBuilder().setTitle(properties.getString("title"));
 			}
-
+			if (properties.containsKeyAndNotNull("message")) {
+				getBuilder().setMessage(properties.getString("message"));
+			}
+			if (properties.containsKeyAndNotNull("icon")) {
+				Drawable icon = TiUIHelper.getResourceDrawable(resolveUrl(null,
+						properties.getString("icon")));
+				getBuilder().setIcon(getBitmapFromImage(icon));
+			}
 			if (properties.containsKey("okButtonTitle")) {
 				okButtonTitle = properties.getString("okButtonTitle");
 			} else {
@@ -62,18 +75,18 @@ public class MultiPickerProxy extends TiViewProxy {
 						.getResources().getString(R.string.ok);
 			}
 
-			if (properties.containsKey("cancelButtonTitle")) {
+			if (properties.containsKeyAndNotNull("cancelButtonTitle")) {
 				cancelButtonTitle = properties.getString("cancelButtonTitle");
 			} else {
 				cancelButtonTitle = this.proxy.getActivity().getApplication()
 						.getResources().getString(R.string.cancel);
 			}
 
-			if (properties.containsKey("canCancel")) {
+			if (properties.containsKeyAndNotNull("canCancel")) {
 				cancellable = properties.getBoolean("canCancel");
 			}
 
-			if (properties.containsKey("options")) {
+			if (properties.containsKeyAndNotNull("options")) {
 				final String[] options = properties.getStringArray("options");
 
 				// only selected items are stored with corresponding index
@@ -208,4 +221,5 @@ public class MultiPickerProxy extends TiViewProxy {
 			}
 		});
 	}
+
 }
