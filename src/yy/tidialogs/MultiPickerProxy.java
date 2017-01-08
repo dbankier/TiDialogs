@@ -9,6 +9,7 @@ import org.appcelerator.kroll.KrollDict;
 import org.appcelerator.kroll.KrollFunction;
 import org.appcelerator.kroll.annotations.Kroll;
 import org.appcelerator.titanium.TiBlob;
+import org.appcelerator.titanium.TiC;
 import org.appcelerator.titanium.io.TiBaseFile;
 import org.appcelerator.titanium.io.TiFileFactory;
 import org.appcelerator.titanium.proxy.TiViewProxy;
@@ -17,12 +18,16 @@ import org.appcelerator.titanium.view.TiDrawableReference;
 import org.appcelerator.titanium.view.TiUIView;
 import org.appcelerator.kroll.common.Log;
 
+
 import android.R;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
+
+
 
 @Kroll.proxy(creatableInModule = TidialogsModule.class)
 public class MultiPickerProxy extends TiViewProxy {
@@ -57,8 +62,8 @@ public class MultiPickerProxy extends TiViewProxy {
 					onChange = (KrollFunction) o;
 				}
 			}
-			if (properties.containsKeyAndNotNull("title")) {
-				getBuilder().setTitle(properties.getString("title"));
+			if (properties.containsKeyAndNotNull(TiC.PROPERTY_TITLE)) {
+				getBuilder().setTitle(properties.getString(TiC.PROPERTY_TITLE));
 			}
 			if (properties.containsKeyAndNotNull("message")) {
 				getBuilder().setMessage(properties.getString("message"));
@@ -66,7 +71,14 @@ public class MultiPickerProxy extends TiViewProxy {
 			if (properties.containsKeyAndNotNull("icon")) {
 				Drawable icon = TiUIHelper.getResourceDrawable(resolveUrl(null,
 						properties.getString("icon")));
-				getBuilder().setIcon(getBitmapFromImage(icon));
+				getBuilder().setIcon(icon);
+			}
+			if (properties.containsKeyAndNotNull(TiC.PROPERTY_ANDROID_VIEW)) {
+				Object o = properties.get(TiC.PROPERTY_ANDROID_VIEW);
+				if (o instanceof TiUIView) {
+					 TiUIView view = (TiUIView)o; 
+					getBuilder().setCustomTitle(view.getNativeView());
+				}
 			}
 			if (properties.containsKey("okButtonTitle")) {
 				okButtonTitle = properties.getString("okButtonTitle");
@@ -213,6 +225,13 @@ public class MultiPickerProxy extends TiViewProxy {
 	@Override
 	protected void handleShow(KrollDict options) {
 		super.handleShow(options);
+		// If there's a lock on the UI message queue, there's a good chance
+		// we're in the middle of activity stack transitions. An alert
+		// dialog should occur above the "topmost" activity, so if activity
+		// stack transitions are occurring, try to give them a chance to
+		// "settle"
+		// before determining which Activity should be the context for the
+		// AlertDialog.
 		TiUIHelper.runUiDelayedIfBlock(new Runnable() {
 			@Override
 			public void run() {
