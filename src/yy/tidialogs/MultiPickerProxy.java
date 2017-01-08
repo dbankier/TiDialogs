@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.appcelerator.kroll.KrollDict;
+import org.appcelerator.kroll.KrollFunction;
 import org.appcelerator.kroll.annotations.Kroll;
 import org.appcelerator.titanium.proxy.TiViewProxy;
 import org.appcelerator.titanium.util.TiUIHelper;
@@ -20,6 +21,7 @@ import android.content.DialogInterface;
 @Kroll.proxy(creatableInModule = TidialogsModule.class)
 public class MultiPickerProxy extends TiViewProxy {
 	private static final String LCAT = TidialogsModule.LCAT;
+	private KrollFunction onChange;
 
 	private class MultiPicker extends TiUIView {
 		Builder builder;
@@ -41,8 +43,14 @@ public class MultiPickerProxy extends TiViewProxy {
 			super.processProperties(properties);
 			String okButtonTitle;
 			String cancelButtonTitle;
-			boolean cancellable = true;
 
+			boolean cancellable = true;
+			if (properties.containsKeyAndNotNull("onchange")) {
+				Object o = properties.get("onchange");
+				if (o instanceof KrollFunction) {
+					onChange = (KrollFunction) o;
+				}
+			}
 			if (properties.containsKey("title")) {
 				getBuilder().setTitle(properties.getString("title"));
 			}
@@ -107,7 +115,8 @@ public class MultiPickerProxy extends TiViewProxy {
 								if (hasListeners("change")) {
 									fireEvent("change", kd);
 								}
-
+								if (onChange != null)
+									onChange.call(getKrollObject(), kd);
 								if (isChecked) {
 									// we can be sure, item is not already in
 									// selection list
