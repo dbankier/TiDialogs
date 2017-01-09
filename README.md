@@ -32,22 +32,32 @@ Here is an example usage:
 
 var picker = Dialogs.createMultiPicker({
   title:"Hello World", 
+  message : "Verbose text about dialog", 
+  icon : "/assets/icon.png",  // locale path to image or in res  folder
   options:["A","B","C"], 
   selected: ["B","C"],       // <-- optional
   okButtonTitle : "Yep",     // <-- optional
   cancelButtonTitle : "Nah"  // <-- optional
+  onChange : function(evt)  { // <-- optional 
+    console.log("index="+ "evt.index + "  checked=" + evt.checked)
+}
 });
 
 // Add the click listener
 picker.addEventListener('click',function(e){
   var indexes    = e.indexes;    // selected indexes
   var selections = e.selections; // the actual selected options.
+  var result = e.result; // an array like [true,false,true,true]     
 });
 
 // Cancel listener
 picker.addEventListener('cancel', function() {
   Ti.API.info("dialog was cancelled");
 });
+
+var onChange = function(evt) {
+    console.log(evt.index + "  " + evt.value);
+};
 
 // open it
 picker.show();
