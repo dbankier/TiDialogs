@@ -140,4 +140,4 @@ picker.show();
 * Compatible Ti.UI.Picker.showTimePickerDialog and Ti.UI.Picker.showDatePickerDialog properties.
 
 
-###Licence: MIT
+### Licence: MIT
