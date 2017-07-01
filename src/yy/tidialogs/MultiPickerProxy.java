@@ -18,7 +18,6 @@ import org.appcelerator.titanium.view.TiDrawableReference;
 import org.appcelerator.titanium.view.TiUIView;
 import org.appcelerator.kroll.common.Log;
 
-
 import android.R;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -26,8 +25,6 @@ import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-
-
 
 @Kroll.proxy(creatableInModule = TidialogsModule.class)
 public class MultiPickerProxy extends TiViewProxy {
@@ -56,11 +53,11 @@ public class MultiPickerProxy extends TiViewProxy {
 			String cancelButtonTitle;
 			String message;
 			boolean cancellable = true;
-			if (properties.containsKeyAndNotNull("onchange")) {
-				Object o = properties.get("onchange");
+			if (properties.containsKeyAndNotNull("onChange")) {
+				Object o = properties.get("onChange");
 				if (o instanceof KrollFunction) {
 					onChange = (KrollFunction) o;
-				}
+				} 
 			}
 			if (properties.containsKeyAndNotNull(TiC.PROPERTY_TITLE)) {
 				getBuilder().setTitle(properties.getString(TiC.PROPERTY_TITLE));
@@ -137,11 +134,28 @@ public class MultiPickerProxy extends TiViewProxy {
 								kd.put("index", which);
 								kd.put("checked", isChecked);
 								kd.put("value", isChecked);
+								
+								
+								
+								ArrayList<String> selections = new ArrayList<String>();
+								for (Integer s : selectedItems) {
+									selections.add(options[s]);
+								}
+								kd.put(
+										"indexes",
+										selectedItems
+												.toArray(new Integer[selectedItems
+														.size()]));
+								kd.put("selections", selections
+										.toArray(new String[selections
+												.size()]));
+								kd.put("result", resultList);
 								if (hasListeners("change")) {
 									fireEvent("change", kd);
 								}
 								if (onChange != null)
 									onChange.call(getKrollObject(), kd);
+								else Log.w(LCAT,"onChange not found");
 								if (isChecked) {
 									// we can be sure, item is not already in
 									// selection list

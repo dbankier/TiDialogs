@@ -32,45 +32,47 @@ public class DatePickerProxy extends TiViewProxy {
 		}
 
 		private DatePickerDialog getDialog() {
-			DatePickerDialog picker = new DatePickerDialog(this.proxy.getActivity(),
-						new DatePickerDialog.OnDateSetListener() {
-							// when dialog box is closed, below method will be
-							// called.
-							public void onDateSet(DatePicker view,
-									int selectedYear, int selectedMonth,
-									int selectedDay) {
-								year = selectedYear;
-								month = selectedMonth;
-								day = selectedDay;
+			DatePickerDialog picker = new DatePickerDialog(
+					this.proxy.getActivity(),
+					new DatePickerDialog.OnDateSetListener() {
+						// when dialog box is closed, below method will be
+						// called.
+						public void onDateSet(DatePicker view,
+								int selectedYear, int selectedMonth,
+								int selectedDay) {
+							year = selectedYear;
+							month = selectedMonth;
+							day = selectedDay;
 
-								KrollDict data = new KrollDict();
+							KrollDict data = new KrollDict();
 
-									Calendar calendar = Calendar.getInstance();
-									calendar.set(Calendar.YEAR, year);
-									calendar.set(Calendar.MONTH, month);
-									calendar.set(Calendar.DAY_OF_MONTH, day);
-									Date value = calendar.getTime();
+							Calendar calendar = Calendar.getInstance();
+							calendar.set(Calendar.YEAR, year);
+							calendar.set(Calendar.MONTH, month);
+							calendar.set(Calendar.DAY_OF_MONTH, day);
+							Date value = calendar.getTime();
 
-									data.put("value", value);
-									data.put("year", year);
-									data.put("month", month);
-									data.put("day", day);
-                                    fireEvent("click", data);		
+							data.put("value", value);
+							data.put("year", year);
+							data.put("month", month);
+							data.put("day", day);
+							fireEvent("click", data);
 
-							}
-						}, year, month, day);
+						}
+					}, year, month, day);
 			picker.setCanceledOnTouchOutside(false);
 
-			picker.setButton(DialogInterface.BUTTON_POSITIVE, okButtonTitle, picker);
+			picker.setButton(DialogInterface.BUTTON_POSITIVE, okButtonTitle,
+					picker);
 
-			picker.setButton(DialogInterface.BUTTON_NEGATIVE, cancelButtonTitle,
-				new DialogInterface.OnClickListener() {
+			picker.setButton(DialogInterface.BUTTON_NEGATIVE,
+					cancelButtonTitle, new DialogInterface.OnClickListener() {
 
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						fireEvent("cancel", new KrollDict());
-					}
-				});
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							fireEvent("cancel", new KrollDict());
+						}
+					});
 
 			return picker;
 		}
@@ -105,12 +107,14 @@ public class DatePickerProxy extends TiViewProxy {
 			if (d.containsKey("okButtonTitle")) {
 				okButtonTitle = d.getString("okButtonTitle");
 			} else {
-				okButtonTitle =  this.proxy.getActivity().getApplication().getResources().getString(R.string.ok);
+				okButtonTitle = this.proxy.getActivity().getApplication()
+						.getResources().getString(R.string.ok);
 			}
 			if (d.containsKey("cancelButtonTitle")) {
 				cancelButtonTitle = d.getString("cancelButtonTitle");
 			} else {
-				cancelButtonTitle = this.proxy.getActivity().getApplication().getResources().getString(R.string.cancel);
+				cancelButtonTitle = this.proxy.getActivity().getApplication()
+						.getResources().getString(R.string.cancel);
 			}
 		}
 

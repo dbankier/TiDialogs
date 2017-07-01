@@ -2,12 +2,12 @@
 # this is your module manifest and used by Titanium
 # during compilation, packaging, distribution, etc.
 #
-version: 3.0.0
+version: 3.0.3
 apiversion: 3
 description: Ti.Dialogs
 author: David Bankier
 license: MIT
-copyright: Copyright (c) 2017 by David Bankier
+copyright: Coyright (c) 2017 by David Bankier
 architectures: armeabi-v7a;x86
 
 # these should not be edited
