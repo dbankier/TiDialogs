@@ -33,7 +33,8 @@ Here is an example usage:
 var picker = Dialogs.createMultiPicker({
   title:"Hello World", 
   message : "Verbose text about dialog", 
-  icon : "/assets/icon.png",  // locale path to image or in res  folder
+  icon : "/assets/icon.png",  // optional, locale path to image or in res  folder
+  androidView : Ti.UI.View(),    // optional 
   options:["A","B","C"], 
   selected: ["B","C"],       // <-- optional
   okButtonTitle : "Yep",     // <-- optional
