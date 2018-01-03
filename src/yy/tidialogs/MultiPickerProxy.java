@@ -31,7 +31,7 @@ import android.graphics.drawable.Drawable;
 
 @Kroll.proxy(creatableInModule = TidialogsModule.class)
 public class MultiPickerProxy extends TiViewProxy {
-	private static final String LCAT = TidialogsModule.LCAT;
+	private static final String LCAT = "TiDialogs";
 	private KrollFunction onChange;
 
 	private class MultiPicker extends TiUIView {
