@@ -12,14 +12,13 @@ A module with the missing native Android dialogs.
 
 ## Install
 
-The modules/zip files is in the the `dist` folder of the repository. Add it to your project like you would any other native module.
+The `modules/zip` files is in the the `dist` folder of the repository. Add it to your project like you would any other native module.
 
 Require the modules with the following code:
 
-~~~
+```javascript
 var Dialogs = require("yy.tidialogs");
-~~~
-
+```
 
 ## Usage
 
@@ -27,7 +26,7 @@ var Dialogs = require("yy.tidialogs");
 
 Here is an example usage:
 
-~~~
+```javascript
 // Create the dialog
 
 var picker = Dialogs.createMultiPicker({
@@ -39,8 +38,8 @@ var picker = Dialogs.createMultiPicker({
   okButtonTitle : "Yep",     // <-- optional
   cancelButtonTitle : "Nah"  // <-- optional
   onChange : function(evt)  { // <-- optional 
-    console.log("index="+ "evt.index + "  checked=" + evt.checked)
-}
+    console.log("index=" + evt.index + " checked=" + evt.checked)
+  }
 });
 
 // Add the click listener
@@ -61,13 +60,13 @@ var onChange = function(evt) {
 
 // open it
 picker.show();
-~~~
+```
 
 ### Date Picker
 
 Here is an example usage:
 
-~~~
+```javascript
 // Create the dialog
 
 // value property is priority
@@ -97,13 +96,13 @@ picker.addEventListener('cancel', function() {
 
 // open it
 picker.show();
-~~~
+```
 
 ### Time Picker
 
 Here is an example usage:
 
-~~~
+```javascript
 // Create the dialog
 
 // value property is priority
@@ -131,13 +130,9 @@ picker.addEventListener('cancel', function() {
 
 // open it
 picker.show();
-~~~
-
+```
 
 ## Changelog
 * Added cancel button are displayed, Honeycomb later.
 * Added okButtonTitle, cancelButtonTitle and value properties.
 * Compatible Ti.UI.Picker.showTimePickerDialog and Ti.UI.Picker.showDatePickerDialog properties.
-
-
-### Licence: MIT
