@@ -84,18 +84,11 @@ public class DatePickerProxy extends BaseDialogProxy
 				picker.getDatePicker().setMaxDate(trimDate(maxDate).getTime());
 			}
 
+			picker.setOnDismissListener(dismissListener);
+
 			picker.setCanceledOnTouchOutside(false);
 
 			picker.setButton(DialogInterface.BUTTON_POSITIVE, okButtonTitle, picker);
-
-			picker.setButton(DialogInterface.BUTTON_NEGATIVE, cancelButtonTitle, new DialogInterface.OnClickListener() {
-
-				@Override
-				public void onClick(DialogInterface dialog, int which)
-				{
-					fireEvent("cancel", new KrollDict());
-				}
-			});
 
 			dialog = picker;
 			return picker;

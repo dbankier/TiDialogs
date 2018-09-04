@@ -40,6 +40,7 @@ public class MultiPickerProxy extends BaseDialogProxy
 		protected AlertDialog getDialog()
 		{
 			dialog = getBuilder().create();
+			dialog.setOnDismissListener(dismissListener);
 			builder = null;
 			return dialog;
 		}
@@ -177,19 +178,7 @@ public class MultiPickerProxy extends BaseDialogProxy
 						}
 					});
 
-				if (cancellable == true) {
-
-					// cancel returns nothing
-					getBuilder().setNegativeButton(cancelButtonTitle, new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int id)
-						{
-							fireEvent("cancel", new KrollDict());
-						}
-					});
-				} else {
-					getBuilder().setCancelable(false);
-				}
+				getBuilder().setCancelable(cancellable);
 			}
 		}
 	}

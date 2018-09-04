@@ -65,14 +65,7 @@ public class TimePickerProxy extends BaseDialogProxy
 
 			picker.setButton(DialogInterface.BUTTON_POSITIVE, okButtonTitle, picker);
 
-			picker.setButton(DialogInterface.BUTTON_NEGATIVE, cancelButtonTitle, new DialogInterface.OnClickListener() {
-
-				@Override
-				public void onClick(DialogInterface dialog, int which)
-				{
-					fireEvent("cancel", new KrollDict());
-				}
-			});
+			picker.setOnDismissListener(dismissListener);
 
 			dialog = picker;
 			return picker;
