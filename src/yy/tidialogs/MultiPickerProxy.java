@@ -8,13 +8,9 @@ import java.util.List;
 import org.appcelerator.kroll.KrollDict;
 import org.appcelerator.kroll.KrollFunction;
 import org.appcelerator.kroll.annotations.Kroll;
-import org.appcelerator.titanium.TiBlob;
 import org.appcelerator.titanium.TiC;
-import org.appcelerator.titanium.io.TiBaseFile;
-import org.appcelerator.titanium.io.TiFileFactory;
 import org.appcelerator.titanium.proxy.TiViewProxy;
 import org.appcelerator.titanium.util.TiUIHelper;
-import org.appcelerator.titanium.view.TiDrawableReference;
 import org.appcelerator.titanium.view.TiUIView;
 import org.appcelerator.kroll.common.Log;
 
@@ -23,22 +19,29 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 
 @Kroll.proxy(creatableInModule = TidialogsModule.class)
-public class MultiPickerProxy extends TiViewProxy
+public class MultiPickerProxy extends BaseDialogProxy
 {
 	private static final String LCAT = "TiDialogs";
 	private KrollFunction onChange;
 
-	private class MultiPicker extends TiUIView
+	private class MultiPicker extends BaseUIDialog
 	{
 		Builder builder;
 
 		public MultiPicker(TiViewProxy proxy)
 		{
 			super(proxy);
+		}
+
+		@Override
+		protected AlertDialog getDialog()
+		{
+			dialog = getBuilder().create();
+			builder = null;
+			return dialog;
 		}
 
 		private Builder getBuilder()
@@ -189,13 +192,6 @@ public class MultiPickerProxy extends TiViewProxy
 				}
 			}
 		}
-
-		public void show()
-		{
-			getBuilder().create().show();
-			builder = null;
-			Log.d(LCAT, "show Dialog");
-		}
 	}
 
 	public MultiPickerProxy()
@@ -213,26 +209,5 @@ public class MultiPickerProxy extends TiViewProxy
 	public void handleCreationDict(KrollDict options)
 	{
 		super.handleCreationDict(options);
-	}
-
-	@Override
-	protected void handleShow(KrollDict options)
-	{
-		super.handleShow(options);
-		// If there's a lock on the UI message queue, there's a good chance
-		// we're in the middle of activity stack transitions. An alert
-		// dialog should occur above the "topmost" activity, so if activity
-		// stack transitions are occurring, try to give them a chance to
-		// "settle"
-		// before determining which Activity should be the context for the
-		// AlertDialog.
-		TiUIHelper.runUiDelayedIfBlock(new Runnable() {
-			@Override
-			public void run()
-			{
-				MultiPicker d = (MultiPicker) getOrCreateView();
-				d.show();
-			}
-		});
 	}
 }

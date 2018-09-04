@@ -6,7 +6,6 @@ import java.util.Date;
 import org.appcelerator.kroll.KrollDict;
 import org.appcelerator.kroll.annotations.Kroll;
 import org.appcelerator.titanium.proxy.TiViewProxy;
-import org.appcelerator.titanium.util.TiUIHelper;
 import org.appcelerator.titanium.view.TiUIView;
 
 import android.R;
@@ -16,9 +15,9 @@ import android.content.DialogInterface;
 import android.widget.DatePicker;
 
 @Kroll.proxy(creatableInModule = TidialogsModule.class)
-public class DatePickerProxy extends TiViewProxy
+public class DatePickerProxy extends BaseDialogProxy
 {
-	private class BasicDatePicker extends TiUIView
+	private class BasicDatePicker extends BaseUIDialog
 	{
 
 		private int year;
@@ -33,7 +32,7 @@ public class DatePickerProxy extends TiViewProxy
 			super(proxy);
 		}
 
-		private DatePickerDialog getDialog()
+		protected DatePickerDialog getDialog()
 		{
 			DatePickerDialog picker =
 				new DatePickerDialog(this.proxy.getActivity(), new DatePickerDialog.OnDateSetListener() {
@@ -73,6 +72,7 @@ public class DatePickerProxy extends TiViewProxy
 				}
 			});
 
+			dialog = picker;
 			return picker;
 		}
 
@@ -115,11 +115,6 @@ public class DatePickerProxy extends TiViewProxy
 				cancelButtonTitle = this.proxy.getActivity().getApplication().getResources().getString(R.string.cancel);
 			}
 		}
-
-		public void show()
-		{
-			getDialog().show();
-		}
 	}
 
 	public DatePickerProxy()
@@ -137,19 +132,5 @@ public class DatePickerProxy extends TiViewProxy
 	public void handleCreationDict(KrollDict options)
 	{
 		super.handleCreationDict(options);
-	}
-
-	@Override
-	protected void handleShow(KrollDict options)
-	{
-		super.handleShow(options);
-		TiUIHelper.runUiDelayedIfBlock(new Runnable() {
-			@Override
-			public void run()
-			{
-				BasicDatePicker d = (BasicDatePicker) getOrCreateView();
-				d.show();
-			}
-		});
 	}
 }
