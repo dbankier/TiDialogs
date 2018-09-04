@@ -17,8 +17,10 @@ import android.text.format.DateFormat;
 import android.widget.TimePicker;
 
 @Kroll.proxy(creatableInModule = TidialogsModule.class)
-public class TimePickerProxy extends TiViewProxy {
-	private class BasicDatePicker extends TiUIView {
+public class TimePickerProxy extends TiViewProxy
+{
+	private class BasicDatePicker extends TiUIView
+	{
 
 		private int hour;
 		private int minute;
@@ -26,57 +28,57 @@ public class TimePickerProxy extends TiViewProxy {
 		private String okButtonTitle;
 		private String cancelButtonTitle;
 
-		public BasicDatePicker(TiViewProxy proxy) {
+		public BasicDatePicker(TiViewProxy proxy)
+		{
 			super(proxy);
-
 		}
 
-		private TimePickerDialog getDialog() {
-			TimePickerDialog picker = new TimePickerDialog(this.proxy.getActivity(),
-						new TimePickerDialog.OnTimeSetListener() {
+		private TimePickerDialog getDialog()
+		{
+			TimePickerDialog picker =
+				new TimePickerDialog(this.proxy.getActivity(), new TimePickerDialog.OnTimeSetListener() {
 
-							@Override
-							public void onTimeSet(TimePicker selectedTime,
-									int selectedHour, int selectedMinute) {
-								// TODO Auto-generated method stub
+					@Override
+					public void onTimeSet(TimePicker selectedTime, int selectedHour, int selectedMinute)
+					{
+						// TODO Auto-generated method stub
 
-								hour = selectedHour;
-								minute = selectedMinute;
+						hour = selectedHour;
+						minute = selectedMinute;
 
-								KrollDict data = new KrollDict();
+						KrollDict data = new KrollDict();
 
-									Calendar calendar = Calendar.getInstance();
-									calendar.set(Calendar.HOUR_OF_DAY, hour);
-									calendar.set(Calendar.MINUTE, minute);
-									Date value = calendar.getTime();
+						Calendar calendar = Calendar.getInstance();
+						calendar.set(Calendar.HOUR_OF_DAY, hour);
+						calendar.set(Calendar.MINUTE, minute);
+						Date value = calendar.getTime();
 
-									data.put("value", value);
-									data.put("hour", hour);
-									data.put("minute", minute);
-                                    fireEvent("click", data);
-
-							}
-						}, hour, minute, DateFormat.is24HourFormat(this.proxy
-								.getActivity()));
+						data.put("value", value);
+						data.put("hour", hour);
+						data.put("minute", minute);
+						fireEvent("click", data);
+					}
+				}, hour, minute, DateFormat.is24HourFormat(this.proxy.getActivity()));
 
 			picker.setCanceledOnTouchOutside(false);
 
 			picker.setButton(DialogInterface.BUTTON_POSITIVE, okButtonTitle, picker);
 
-			picker.setButton(DialogInterface.BUTTON_NEGATIVE, cancelButtonTitle,
-				new DialogInterface.OnClickListener() {
+			picker.setButton(DialogInterface.BUTTON_NEGATIVE, cancelButtonTitle, new DialogInterface.OnClickListener() {
 
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						fireEvent("cancel", new KrollDict());
-					}
-				});
+				@Override
+				public void onClick(DialogInterface dialog, int which)
+				{
+					fireEvent("cancel", new KrollDict());
+				}
+			});
 
 			return picker;
 		}
 
 		@Override
-		public void processProperties(KrollDict d) {
+		public void processProperties(KrollDict d)
+		{
 			super.processProperties(d);
 
 			Calendar c = Calendar.getInstance();
@@ -100,7 +102,7 @@ public class TimePickerProxy extends TiViewProxy {
 			if (d.containsKey("okButtonTitle")) {
 				okButtonTitle = d.getString("okButtonTitle");
 			} else {
-				okButtonTitle =  this.proxy.getActivity().getApplication().getResources().getString(R.string.ok);
+				okButtonTitle = this.proxy.getActivity().getApplication().getResources().getString(R.string.ok);
 			}
 			if (d.containsKey("cancelButtonTitle")) {
 				cancelButtonTitle = d.getString("cancelButtonTitle");
@@ -109,32 +111,37 @@ public class TimePickerProxy extends TiViewProxy {
 			}
 		}
 
-		public void show() {
+		public void show()
+		{
 			getDialog().show();
 		}
-
 	}
 
-	public TimePickerProxy() {
+	public TimePickerProxy()
+	{
 		super();
 	}
 
 	@Override
-	public TiUIView createView(Activity activity) {
+	public TiUIView createView(Activity activity)
+	{
 		return new BasicDatePicker(this);
 	}
 
 	@Override
-	public void handleCreationDict(KrollDict options) {
+	public void handleCreationDict(KrollDict options)
+	{
 		super.handleCreationDict(options);
 	}
 
 	@Override
-	protected void handleShow(KrollDict options) {
+	protected void handleShow(KrollDict options)
+	{
 		super.handleShow(options);
 		TiUIHelper.runUiDelayedIfBlock(new Runnable() {
 			@Override
-			public void run() {
+			public void run()
+			{
 				BasicDatePicker d = (BasicDatePicker) getOrCreateView();
 				d.show();
 			}

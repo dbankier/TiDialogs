@@ -5,10 +5,10 @@ import org.appcelerator.kroll.annotations.Kroll;
 
 import org.appcelerator.titanium.TiApplication;
 
-@Kroll.module(name="Tidialogs", id="yy.tidialogs")
+@Kroll.module(name = "Tidialogs", id = "yy.tidialogs")
 public class TidialogsModule extends KrollModule
 {
-	
+
 	public TidialogsModule()
 	{
 		super();
@@ -17,7 +17,5 @@ public class TidialogsModule extends KrollModule
 	@Kroll.onAppCreate
 	public static void onAppCreate(TiApplication app)
 	{
-		
 	}
 }
-
