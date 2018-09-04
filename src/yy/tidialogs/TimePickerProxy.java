@@ -6,6 +6,7 @@ import java.util.Date;
 import org.appcelerator.kroll.KrollDict;
 import org.appcelerator.kroll.annotations.Kroll;
 import org.appcelerator.titanium.proxy.TiViewProxy;
+import org.appcelerator.titanium.util.TiConvert;
 import org.appcelerator.titanium.view.TiUIView;
 
 import android.R;
@@ -23,6 +24,7 @@ public class TimePickerProxy extends BaseDialogProxy
 
 		private int hour;
 		private int minute;
+		private boolean is24HourView;
 
 		private String okButtonTitle;
 		private String cancelButtonTitle;
@@ -57,7 +59,7 @@ public class TimePickerProxy extends BaseDialogProxy
 						data.put("minute", minute);
 						fireEvent("click", data);
 					}
-				}, hour, minute, DateFormat.is24HourFormat(this.proxy.getActivity()));
+				}, hour, minute, is24HourView);
 
 			picker.setCanceledOnTouchOutside(false);
 
@@ -97,6 +99,12 @@ public class TimePickerProxy extends BaseDialogProxy
 				} else {
 					minute = c.get(Calendar.MINUTE);
 				}
+			}
+
+			if (d.containsKey("format24")) {
+				is24HourView = TiConvert.toBoolean(d, "format24");
+			} else {
+				is24HourView = DateFormat.is24HourFormat(this.proxy.getActivity());
 			}
 
 			if (d.containsKey("okButtonTitle")) {
