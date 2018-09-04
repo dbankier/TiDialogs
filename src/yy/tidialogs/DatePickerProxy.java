@@ -5,14 +5,20 @@ import java.util.Date;
 
 import org.appcelerator.kroll.KrollDict;
 import org.appcelerator.kroll.annotations.Kroll;
+import org.appcelerator.titanium.TiApplication;
+import org.appcelerator.titanium.TiC;
 import org.appcelerator.titanium.proxy.TiViewProxy;
 import org.appcelerator.titanium.view.TiUIView;
 
 import android.R;
 import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.app.DatePickerDialog.OnDateSetListener;
 import android.content.DialogInterface;
+import android.os.Build;
 import android.widget.DatePicker;
+
+import ti.modules.titanium.ui.widget.picker.TiDatePickerDialog;
 
 @Kroll.proxy(creatableInModule = TidialogsModule.class)
 public class DatePickerProxy extends BaseDialogProxy
@@ -24,6 +30,9 @@ public class DatePickerProxy extends BaseDialogProxy
 		private int month;
 		private int day;
 
+		private Date maxDate;
+		private Date minDate;
+
 		private String okButtonTitle;
 		private String cancelButtonTitle;
 
@@ -34,31 +43,47 @@ public class DatePickerProxy extends BaseDialogProxy
 
 		protected DatePickerDialog getDialog()
 		{
-			DatePickerDialog picker =
-				new DatePickerDialog(this.proxy.getActivity(), new DatePickerDialog.OnDateSetListener() {
-					// when dialog box is closed, below method will be
-					// called.
-					public void onDateSet(DatePicker view, int selectedYear, int selectedMonth, int selectedDay)
-					{
-						year = selectedYear;
-						month = selectedMonth;
-						day = selectedDay;
+			OnDateSetListener dateSetListener = new OnDateSetListener() {
+				// when dialog box is closed, below method will be
+				// called.
+				public void onDateSet(DatePicker view, int selectedYear, int selectedMonth, int selectedDay)
+				{
+					year = selectedYear;
+					month = selectedMonth;
+					day = selectedDay;
 
-						KrollDict data = new KrollDict();
+					KrollDict data = new KrollDict();
 
-						Calendar calendar = Calendar.getInstance();
-						calendar.set(Calendar.YEAR, year);
-						calendar.set(Calendar.MONTH, month);
-						calendar.set(Calendar.DAY_OF_MONTH, day);
-						Date value = calendar.getTime();
+					Calendar calendar = Calendar.getInstance();
+					calendar.set(Calendar.YEAR, year);
+					calendar.set(Calendar.MONTH, month);
+					calendar.set(Calendar.DAY_OF_MONTH, day);
+					Date value = calendar.getTime();
 
-						data.put("value", value);
-						data.put("year", year);
-						data.put("month", month);
-						data.put("day", day);
-						fireEvent("click", data);
-					}
-				}, year, month, day);
+					data.put("value", value);
+					data.put("year", year);
+					data.put("month", month);
+					data.put("day", day);
+					fireEvent("click", data);
+				}
+			};
+			DatePickerDialog picker;
+
+			if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+				&& (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)) {
+				picker = new TiDatePickerDialog(proxy.getActivity(), dateSetListener, year, month, day);
+			} else {
+				picker = new DatePickerDialog(TiApplication.getAppCurrentActivity(), dateSetListener, year, month, day);
+			}
+
+			if (minDate != null) {
+				picker.getDatePicker().setMinDate(trimDate(minDate).getTime());
+			}
+
+			if (maxDate != null) {
+				picker.getDatePicker().setMaxDate(trimDate(maxDate).getTime());
+			}
+
 			picker.setCanceledOnTouchOutside(false);
 
 			picker.setButton(DialogInterface.BUTTON_POSITIVE, okButtonTitle, picker);
@@ -104,6 +129,13 @@ public class DatePickerProxy extends BaseDialogProxy
 				}
 			}
 
+			if (d.containsKey(TiC.PROPERTY_MIN_DATE)) {
+				minDate = (Date) d.get(TiC.PROPERTY_MIN_DATE);
+			}
+			if (d.containsKey(TiC.PROPERTY_MAX_DATE)) {
+				maxDate = (Date) d.get(TiC.PROPERTY_MAX_DATE);
+			}
+
 			if (d.containsKey("okButtonTitle")) {
 				okButtonTitle = d.getString("okButtonTitle");
 			} else {
@@ -132,5 +164,21 @@ public class DatePickerProxy extends BaseDialogProxy
 	public void handleCreationDict(KrollDict options)
 	{
 		super.handleCreationDict(options);
+	}
+
+	/**
+	 * Trim hour, minute, second and millisecond from the date
+	 * @param inDate input date
+	 * @return return the trimmed date
+	 */
+	public static Date trimDate(Date inDate)
+	{
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(inDate);
+		cal.set(Calendar.HOUR_OF_DAY, 0);
+		cal.set(Calendar.MINUTE, 0);
+		cal.set(Calendar.SECOND, 0);
+		cal.set(Calendar.MILLISECOND, 0);
+		return cal.getTime();
 	}
 }
