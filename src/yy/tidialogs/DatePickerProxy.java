@@ -43,6 +43,9 @@ public class DatePickerProxy extends BaseDialogProxy
 
 		protected DatePickerDialog getDialog()
 		{
+			if (dialog != null) {
+				return (DatePickerDialog) dialog;
+			}
 			OnDateSetListener dateSetListener = new OnDateSetListener() {
 				// when dialog box is closed, below method will be
 				// called.

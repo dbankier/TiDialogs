@@ -39,6 +39,9 @@ public class TimePickerProxy extends BaseDialogProxy
 
 		protected TimePickerDialog getDialog()
 		{
+			if (dialog != null) {
+				return (TimePickerDialog) dialog;
+			}
 			TimePickerDialog.OnTimeSetListener timeSetListener = new TimePickerDialog.OnTimeSetListener() {
 
 				@Override

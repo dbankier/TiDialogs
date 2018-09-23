@@ -39,6 +39,9 @@ public class MultiPickerProxy extends BaseDialogProxy
 		@Override
 		protected AlertDialog getDialog()
 		{
+			if (dialog != null) {
+				return dialog;
+			}
 			dialog = getBuilder().create();
 			dialog.setOnDismissListener(dismissListener);
 			builder = null;
