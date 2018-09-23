@@ -14,12 +14,15 @@ import android.app.Activity;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.text.format.DateFormat;
+import android.os.Build;
 import android.widget.TimePicker;
+
+import ti.modules.titanium.ui.widget.picker.TiTimePickerDialog;
 
 @Kroll.proxy(creatableInModule = TidialogsModule.class)
 public class TimePickerProxy extends BaseDialogProxy
 {
-	private class BasicDatePicker extends BaseUIDialog
+	private class BasicTimePicker extends BaseUIDialog
 	{
 
 		private int hour;
@@ -29,37 +32,48 @@ public class TimePickerProxy extends BaseDialogProxy
 		private String okButtonTitle;
 		private String cancelButtonTitle;
 
-		public BasicDatePicker(TiViewProxy proxy)
+		public BasicTimePicker(TiViewProxy proxy)
 		{
 			super(proxy);
 		}
 
 		protected TimePickerDialog getDialog()
 		{
-			TimePickerDialog picker =
-				new TimePickerDialog(this.proxy.getActivity(), new TimePickerDialog.OnTimeSetListener() {
+			TimePickerDialog.OnTimeSetListener timeSetListener = new TimePickerDialog.OnTimeSetListener() {
 
-					@Override
-					public void onTimeSet(TimePicker selectedTime, int selectedHour, int selectedMinute)
-					{
-						// TODO Auto-generated method stub
+				@Override
+				public void onTimeSet(TimePicker selectedTime, int selectedHour, int selectedMinute)
+				{
+					// TODO Auto-generated method stub
 
-						hour = selectedHour;
-						minute = selectedMinute;
+					hour = selectedHour;
+					minute = selectedMinute;
 
-						KrollDict data = new KrollDict();
+					KrollDict data = new KrollDict();
 
-						Calendar calendar = Calendar.getInstance();
-						calendar.set(Calendar.HOUR_OF_DAY, hour);
-						calendar.set(Calendar.MINUTE, minute);
-						Date value = calendar.getTime();
+					Calendar calendar = Calendar.getInstance();
+					calendar.set(Calendar.HOUR_OF_DAY, hour);
+					calendar.set(Calendar.MINUTE, minute);
+					Date value = calendar.getTime();
 
-						data.put("value", value);
-						data.put("hour", hour);
-						data.put("minute", minute);
-						fireEvent("click", data);
-					}
-				}, hour, minute, is24HourView);
+					data.put("value", value);
+					data.put("hour", hour);
+					data.put("minute", minute);
+					fireEvent("click", data);
+				}
+			};
+
+			// TimePickerDialog has a bug in Android 4.x
+			// If build version is using Android 4.x, use
+			// our TiTimePickerDialog. It was fixed from Android 5.0.
+			TimePickerDialog picker;
+
+			if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+				&& (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)) {
+				picker = new TiTimePickerDialog(proxy.getActivity(), timeSetListener, hour, minute, is24HourView);
+			} else {
+				picker = new TimePickerDialog(proxy.getActivity(), timeSetListener, hour, minute, is24HourView);
+			}
 
 			picker.setCanceledOnTouchOutside(false);
 
@@ -121,7 +135,7 @@ public class TimePickerProxy extends BaseDialogProxy
 	@Override
 	public TiUIView createView(Activity activity)
 	{
-		return new BasicDatePicker(this);
+		return new BasicTimePicker(this);
 	}
 
 	@Override
