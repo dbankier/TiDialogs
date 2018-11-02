@@ -74,7 +74,8 @@ public class DatePickerProxy extends BaseDialogProxy
 
 			if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH)
 				&& (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)) {
-				picker = new TiDatePickerDialog(proxy.getActivity(), dateSetListener, year, month, day);
+				picker =
+					new TiDatePickerDialog(TiApplication.getAppCurrentActivity(), dateSetListener, year, month, day);
 			} else {
 				picker = new DatePickerDialog(TiApplication.getAppCurrentActivity(), dateSetListener, year, month, day);
 			}
@@ -135,12 +136,14 @@ public class DatePickerProxy extends BaseDialogProxy
 			if (d.containsKey("okButtonTitle")) {
 				okButtonTitle = d.getString("okButtonTitle");
 			} else {
-				okButtonTitle = this.proxy.getActivity().getApplication().getResources().getString(R.string.ok);
+				okButtonTitle =
+					TiApplication.getAppCurrentActivity().getApplication().getResources().getString(R.string.ok);
 			}
 			if (d.containsKey("cancelButtonTitle")) {
 				cancelButtonTitle = d.getString("cancelButtonTitle");
 			} else {
-				cancelButtonTitle = this.proxy.getActivity().getApplication().getResources().getString(R.string.cancel);
+				cancelButtonTitle =
+					TiApplication.getAppCurrentActivity().getApplication().getResources().getString(R.string.cancel);
 			}
 		}
 	}

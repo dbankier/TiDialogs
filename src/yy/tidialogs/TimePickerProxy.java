@@ -5,6 +5,7 @@ import java.util.Date;
 
 import org.appcelerator.kroll.KrollDict;
 import org.appcelerator.kroll.annotations.Kroll;
+import org.appcelerator.titanium.TiApplication;
 import org.appcelerator.titanium.proxy.TiViewProxy;
 import org.appcelerator.titanium.util.TiConvert;
 import org.appcelerator.titanium.view.TiUIView;
@@ -71,11 +72,12 @@ public class TimePickerProxy extends BaseDialogProxy
 			// our TiTimePickerDialog. It was fixed from Android 5.0.
 			TimePickerDialog picker;
 
+			Activity activity = TiApplication.getAppCurrentActivity();
 			if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH)
 				&& (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)) {
-				picker = new TiTimePickerDialog(proxy.getActivity(), timeSetListener, hour, minute, is24HourView);
+				picker = new TiTimePickerDialog(activity, timeSetListener, hour, minute, is24HourView);
 			} else {
-				picker = new TimePickerDialog(proxy.getActivity(), timeSetListener, hour, minute, is24HourView);
+				picker = new TimePickerDialog(activity, timeSetListener, hour, minute, is24HourView);
 			}
 
 			picker.setCanceledOnTouchOutside(false);
@@ -114,18 +116,20 @@ public class TimePickerProxy extends BaseDialogProxy
 			if (d.containsKey("format24")) {
 				is24HourView = TiConvert.toBoolean(d, "format24");
 			} else {
-				is24HourView = DateFormat.is24HourFormat(this.proxy.getActivity());
+				is24HourView = DateFormat.is24HourFormat(TiApplication.getAppCurrentActivity());
 			}
 
 			if (d.containsKey("okButtonTitle")) {
 				okButtonTitle = d.getString("okButtonTitle");
 			} else {
-				okButtonTitle = this.proxy.getActivity().getApplication().getResources().getString(R.string.ok);
+				okButtonTitle =
+					TiApplication.getAppCurrentActivity().getApplication().getResources().getString(R.string.ok);
 			}
 			if (d.containsKey("cancelButtonTitle")) {
 				cancelButtonTitle = d.getString("cancelButtonTitle");
 			} else {
-				cancelButtonTitle = this.proxy.getActivity().getApplication().getResources().getString(R.string.cancel);
+				cancelButtonTitle =
+					TiApplication.getAppCurrentActivity().getApplication().getResources().getString(R.string.cancel);
 			}
 		}
 	}

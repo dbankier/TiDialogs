@@ -8,6 +8,7 @@ import java.util.List;
 import org.appcelerator.kroll.KrollDict;
 import org.appcelerator.kroll.KrollFunction;
 import org.appcelerator.kroll.annotations.Kroll;
+import org.appcelerator.titanium.TiApplication;
 import org.appcelerator.titanium.TiC;
 import org.appcelerator.titanium.proxy.TiViewProxy;
 import org.appcelerator.titanium.util.TiUIHelper;
@@ -51,7 +52,7 @@ public class MultiPickerProxy extends BaseDialogProxy
 		private Builder getBuilder()
 		{
 			if (builder == null) {
-				builder = new AlertDialog.Builder(this.proxy.getActivity());
+				builder = new AlertDialog.Builder(TiApplication.getAppCurrentActivity());
 				builder.setCancelable(true);
 			}
 			return builder;
@@ -91,13 +92,15 @@ public class MultiPickerProxy extends BaseDialogProxy
 			if (properties.containsKey("okButtonTitle")) {
 				okButtonTitle = properties.getString("okButtonTitle");
 			} else {
-				okButtonTitle = this.proxy.getActivity().getApplication().getResources().getString(R.string.ok);
+				okButtonTitle =
+					TiApplication.getAppCurrentActivity().getApplication().getResources().getString(R.string.ok);
 			}
 
 			if (properties.containsKeyAndNotNull("cancelButtonTitle")) {
 				cancelButtonTitle = properties.getString("cancelButtonTitle");
 			} else {
-				cancelButtonTitle = this.proxy.getActivity().getApplication().getResources().getString(R.string.cancel);
+				cancelButtonTitle =
+					TiApplication.getAppCurrentActivity().getApplication().getResources().getString(R.string.cancel);
 			}
 
 			if (properties.containsKeyAndNotNull("canCancel")) {
