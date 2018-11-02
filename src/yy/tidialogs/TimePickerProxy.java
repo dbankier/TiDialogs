@@ -5,8 +5,9 @@ import java.util.Date;
 
 import org.appcelerator.kroll.KrollDict;
 import org.appcelerator.kroll.annotations.Kroll;
+import org.appcelerator.titanium.TiApplication;
 import org.appcelerator.titanium.proxy.TiViewProxy;
-import org.appcelerator.titanium.util.TiUIHelper;
+import org.appcelerator.titanium.util.TiConvert;
 import org.appcelerator.titanium.view.TiUIView;
 
 import android.R;
@@ -14,69 +15,84 @@ import android.app.Activity;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.text.format.DateFormat;
+import android.os.Build;
 import android.widget.TimePicker;
 
+import ti.modules.titanium.ui.widget.picker.TiTimePickerDialog;
+
 @Kroll.proxy(creatableInModule = TidialogsModule.class)
-public class TimePickerProxy extends TiViewProxy {
-	private class BasicDatePicker extends TiUIView {
+public class TimePickerProxy extends BaseDialogProxy
+{
+	private class BasicTimePicker extends BaseUIDialog
+	{
 
 		private int hour;
 		private int minute;
+		private boolean is24HourView;
 
 		private String okButtonTitle;
 		private String cancelButtonTitle;
 
-		public BasicDatePicker(TiViewProxy proxy) {
+		public BasicTimePicker(TiViewProxy proxy)
+		{
 			super(proxy);
-
 		}
 
-		private TimePickerDialog getDialog() {
-			TimePickerDialog picker = new TimePickerDialog(this.proxy.getActivity(),
-						new TimePickerDialog.OnTimeSetListener() {
+		protected TimePickerDialog getDialog()
+		{
+			if (dialog != null) {
+				return (TimePickerDialog) dialog;
+			}
+			TimePickerDialog.OnTimeSetListener timeSetListener = new TimePickerDialog.OnTimeSetListener() {
 
-							@Override
-							public void onTimeSet(TimePicker selectedTime,
-									int selectedHour, int selectedMinute) {
-								// TODO Auto-generated method stub
+				@Override
+				public void onTimeSet(TimePicker selectedTime, int selectedHour, int selectedMinute)
+				{
+					// TODO Auto-generated method stub
 
-								hour = selectedHour;
-								minute = selectedMinute;
+					hour = selectedHour;
+					minute = selectedMinute;
 
-								KrollDict data = new KrollDict();
+					KrollDict data = new KrollDict();
 
-									Calendar calendar = Calendar.getInstance();
-									calendar.set(Calendar.HOUR_OF_DAY, hour);
-									calendar.set(Calendar.MINUTE, minute);
-									Date value = calendar.getTime();
+					Calendar calendar = Calendar.getInstance();
+					calendar.set(Calendar.HOUR_OF_DAY, hour);
+					calendar.set(Calendar.MINUTE, minute);
+					Date value = calendar.getTime();
 
-									data.put("value", value);
-									data.put("hour", hour);
-									data.put("minute", minute);
-                                    fireEvent("click", data);
+					data.put("value", value);
+					data.put("hour", hour);
+					data.put("minute", minute);
+					fireEvent("click", data);
+				}
+			};
 
-							}
-						}, hour, minute, DateFormat.is24HourFormat(this.proxy
-								.getActivity()));
+			// TimePickerDialog has a bug in Android 4.x
+			// If build version is using Android 4.x, use
+			// our TiTimePickerDialog. It was fixed from Android 5.0.
+			TimePickerDialog picker;
+
+			Activity activity = TiApplication.getAppCurrentActivity();
+			if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+				&& (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)) {
+				picker = new TiTimePickerDialog(activity, timeSetListener, hour, minute, is24HourView);
+			} else {
+				picker = new TimePickerDialog(activity, timeSetListener, hour, minute, is24HourView);
+			}
 
 			picker.setCanceledOnTouchOutside(false);
 
 			picker.setButton(DialogInterface.BUTTON_POSITIVE, okButtonTitle, picker);
 
-			picker.setButton(DialogInterface.BUTTON_NEGATIVE, cancelButtonTitle,
-				new DialogInterface.OnClickListener() {
+			picker.setOnDismissListener(dismissListener);
 
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						fireEvent("cancel", new KrollDict());
-					}
-				});
-
+			dialog = picker;
 			return picker;
 		}
 
 		@Override
-		public void processProperties(KrollDict d) {
+		public void processProperties(KrollDict d)
+		{
 			super.processProperties(d);
 
 			Calendar c = Calendar.getInstance();
@@ -97,47 +113,41 @@ public class TimePickerProxy extends TiViewProxy {
 				}
 			}
 
+			if (d.containsKey("format24")) {
+				is24HourView = TiConvert.toBoolean(d, "format24");
+			} else {
+				is24HourView = DateFormat.is24HourFormat(TiApplication.getAppCurrentActivity());
+			}
+
 			if (d.containsKey("okButtonTitle")) {
 				okButtonTitle = d.getString("okButtonTitle");
 			} else {
-				okButtonTitle =  this.proxy.getActivity().getApplication().getResources().getString(R.string.ok);
+				okButtonTitle =
+					TiApplication.getAppCurrentActivity().getApplication().getResources().getString(R.string.ok);
 			}
 			if (d.containsKey("cancelButtonTitle")) {
 				cancelButtonTitle = d.getString("cancelButtonTitle");
 			} else {
-				cancelButtonTitle = this.proxy.getActivity().getApplication().getResources().getString(R.string.cancel);
+				cancelButtonTitle =
+					TiApplication.getAppCurrentActivity().getApplication().getResources().getString(R.string.cancel);
 			}
 		}
-
-		public void show() {
-			getDialog().show();
-		}
-
 	}
 
-	public TimePickerProxy() {
+	public TimePickerProxy()
+	{
 		super();
 	}
 
 	@Override
-	public TiUIView createView(Activity activity) {
-		return new BasicDatePicker(this);
+	public TiUIView createView(Activity activity)
+	{
+		return new BasicTimePicker(this);
 	}
 
 	@Override
-	public void handleCreationDict(KrollDict options) {
+	public void handleCreationDict(KrollDict options)
+	{
 		super.handleCreationDict(options);
-	}
-
-	@Override
-	protected void handleShow(KrollDict options) {
-		super.handleShow(options);
-		TiUIHelper.runUiDelayedIfBlock(new Runnable() {
-			@Override
-			public void run() {
-				BasicDatePicker d = (BasicDatePicker) getOrCreateView();
-				d.show();
-			}
-		});
 	}
 }
